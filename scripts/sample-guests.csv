@@ -1,0 +1,7 @@
+first_name,last_name,household_name,is_child,events_invited_to
+John,Smith,The Smith Family,false,"Ceremony,Reception"
+Jane,Smith,The Smith Family,false,"Ceremony,Reception"
+Tommy,Smith,The Smith Family,true,"Ceremony,Reception"
+Alice,Johnson,Alice Johnson,false,"Ceremony,Reception"
+Bob,Williams,The Williams Family,false,Reception
+Carol,Williams,The Williams Family,false,Reception

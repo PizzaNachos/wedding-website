@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx svelte-check:*)",
+      "Bash(grep -r \"status\" /d/projects_big/wedding-website/supabase/migrations/*.sql)",
+      "Bash(find d:projects_bigwedding-website -type f -name *photo* -o -type d -name *photo*)",
+      "Bash(grep -r \"content-type\\\\|mime\\\\|image/\\\\|Content-Type\" /d/projects_big/wedding-website/src --include=*.ts --include=*.tsx --include=*.svelte --include=*.js)",
+      "Bash(grep -r \"direct\\\\|upload\\\\|url\\\\|presigned\" /d/projects_big/wedding-website/src/lib --include=*.ts -i)",
+      "Bash(find d:projects_bigwedding-website -type f \\\\\\(-name .env* -o -name *.env* \\\\\\))",
+      "Bash(ls -la /d/projects_big/wedding-website/src/routes/rsvp/[code]/)"
+    ]
+  }
+}
