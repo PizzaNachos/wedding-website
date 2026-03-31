@@ -9,10 +9,10 @@ export const load: PageServerLoad = async ({ url }) => {
 	const statusFilter = url.searchParams.get('status') ?? '';
 	const dietaryFilter = url.searchParams.get('dietary') ?? '';
 
-	// Get all guests with household, events, and RSVPs
+	// Get all guests with household and RSVPs
 	let query = supabase
 		.from('guests')
-		.select('*, households(id, name), guest_events(event_id, events(name)), rsvps(event_id, attending, dietary_restrictions, song_request)')
+		.select('*, households(id, name), rsvps(attending, dietary_restrictions, song_request)')
 		.order('last_name', { ascending: true });
 
 	if (search) {
@@ -47,17 +47,27 @@ export const load: PageServerLoad = async ({ url }) => {
 		);
 	}
 
-	// Fetch contact info emails
+	// Fetch household contact info for emails
 	const { data: contactInfo } = await supabase
-		.from('guest_contact_info')
-		.select('guest_id, email');
+		.from('household_contact_info')
+		.select('household_id, email');
 
-	const emailByGuestId: Record<string, string> = {};
+	const emailByHouseholdId: Record<string, string> = {};
 	for (const c of contactInfo ?? []) {
-		emailByGuestId[c.guest_id] = c.email;
+		emailByHouseholdId[c.household_id] = c.email;
 	}
 
-	return { guests: filteredGuests, emailByGuestId, search, statusFilter, dietaryFilter };
+	// Fetch ceremony interest
+	const { data: ceremonyInterest } = await supabase
+		.from('ceremony_interest')
+		.select('*');
+
+	const ceremonyByGuestId: Record<string, { interest_level: string; other_text: string | null }> = {};
+	for (const c of ceremonyInterest ?? []) {
+		ceremonyByGuestId[c.guest_id] = c;
+	}
+
+	return { guests: filteredGuests, emailByHouseholdId, ceremonyByGuestId, search, statusFilter, dietaryFilter };
 };
 
 export const actions: Actions = {
@@ -69,7 +79,7 @@ export const actions: Actions = {
 		if (!id) return fail(400, { error: 'Guest ID is required.' });
 
 		await supabase.from('rsvps').delete().eq('guest_id', id);
-		await supabase.from('guest_events').delete().eq('guest_id', id);
+		await supabase.from('ceremony_interest').delete().eq('guest_id', id);
 		const { error } = await supabase.from('guests').delete().eq('id', id);
 
 		if (error) {

@@ -1,17 +1,14 @@
 import { error } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase';
 import { createServiceClient } from '$lib/supabase-server';
-import { US_STATES } from '$lib/types';
 import type { PageServerLoad, Actions } from './$types';
-
-const validStateValues = new Set<string>(US_STATES.map((s) => s.value));
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { code } = params;
 
 	const { data: household, error: householdError } = await supabase
 		.from('households')
-		.select('*, guests(*, guest_events(*, events(*)))')
+		.select('*, guests(*)')
 		.eq('unique_code', code)
 		.single();
 
@@ -26,19 +23,19 @@ export const load: PageServerLoad = async ({ params }) => {
 		.select('*')
 		.in('guest_id', guestIds);
 
-	// Fetch contact info using service role (anon can't SELECT this table)
-	const serviceClient = createServiceClient();
-	const { data: existingContactInfo } = await serviceClient
-		.from('guest_contact_info')
+	const { data: existingCeremonyInterest } = await supabase
+		.from('ceremony_interest')
 		.select('*')
 		.in('guest_id', guestIds);
 
 	return {
 		household,
 		existingRsvps: existingRsvps ?? [],
-		existingContactInfo: existingContactInfo ?? []
+		existingCeremonyInterest: existingCeremonyInterest ?? []
 	};
 };
+
+const VALID_CEREMONY_LEVELS = new Set(['yes', 'maybe', 'not_likely', 'other']);
 
 export const actions: Actions = {
 	default: async ({ request, params }) => {
@@ -47,7 +44,7 @@ export const actions: Actions = {
 		// Verify the household code is valid
 		const { data: household } = await supabase
 			.from('households')
-			.select('*, guests(id)')
+			.select('*, guests(id, is_child)')
 			.eq('unique_code', code)
 			.single();
 
@@ -56,163 +53,132 @@ export const actions: Actions = {
 		}
 
 		const validGuestIds = new Set(household.guests.map((g: { id: string }) => g.id));
+		const childGuestIds = new Set(
+			household.guests
+				.filter((g: { is_child: boolean }) => g.is_child)
+				.map((g: { id: string }) => g.id)
+		);
+		const hasAdults = household.guests.some((g: { is_child: boolean }) => !g.is_child);
 		const formData = await request.formData();
 
-		// Parse all guest RSVPs from form data
-		// Form fields are named: guests[guestId].events[eventId].attending, etc.
-		const rsvpUpdates: Array<{
-			guest_id: string;
-			event_id: string;
-			attending: boolean;
-			dietary_restrictions: { selections: string[]; other: string };
-			song_request: string;
-		}> = [];
+		// Check if this is a first-time submission (no existing RSVPs)
+		const { data: existingRsvps } = await supabase
+			.from('rsvps')
+			.select('guest_id')
+			.in('guest_id', [...validGuestIds]);
+		const isFirstSubmission = !existingRsvps?.length;
 
-		// Collect all guest-event pairs from the form
-		const guestEventMap = new Map<string, Map<string, boolean>>();
-		const guestDietaryMap = new Map<string, { selections: string[]; other: string }>();
-		const guestSongMap = new Map<string, string>();
-		const guestContactMap = new Map<
-			string,
-			{
-				email: string;
-				phone: string;
-				address_street: string;
-				address_unit: string;
-				address_city: string;
-				address_state: string;
-				address_zip: string;
+		// 1. Parse household contact info (only on first submission)
+		const householdContact = {
+			email: String(formData.get('household.email') ?? '').trim(),
+			phone: String(formData.get('household.phone') ?? '').trim() || null,
+			address_street: String(formData.get('household.address_street') ?? '').trim() || null,
+			address_city: String(formData.get('household.address_city') ?? '').trim() || null,
+			address_state: String(formData.get('household.address_state') ?? '').trim() || null,
+			address_country: String(formData.get('household.address_country') ?? '').trim() || null,
+			address_postal_code:
+				String(formData.get('household.address_postal_code') ?? '').trim() || null
+		};
+
+		// Validate email (only on first submission when contact fields are shown)
+		if (isFirstSubmission) {
+			if (hasAdults && !householdContact.email) {
+				return { success: false, message: 'Please enter an email address.' };
 			}
-		>();
+			if (householdContact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(householdContact.email)) {
+				return { success: false, message: 'Please enter a valid email address.' };
+			}
+		}
 
-		const contactFields = new Set([
-			'email',
-			'phone',
-			'address_street',
-			'address_unit',
-			'address_city',
-			'address_state',
-			'address_zip'
-		]);
+		// 2. Parse per-guest data
+		const guestAttending = new Map<string, boolean>();
+		const guestCeremony = new Map<string, { level: string; otherText: string }>();
+		const guestDietary = new Map<string, { selections: string[]; other: string }>();
+		const guestSongs = new Map<string, string>();
 
 		for (const [key, value] of formData.entries()) {
-			const attendingMatch = key.match(/^guests\[(.+?)\]\.events\[(.+?)\]\.attending$/);
+			// Reception attending
+			const attendingMatch = key.match(/^guests\[(.+?)\]\.attending$/);
 			if (attendingMatch) {
-				const [, guestId, eventId] = attendingMatch;
-				if (!guestEventMap.has(guestId)) guestEventMap.set(guestId, new Map());
-				guestEventMap.get(guestId)!.set(eventId, value === 'yes');
+				const guestId = attendingMatch[1];
+				if (validGuestIds.has(guestId)) {
+					guestAttending.set(guestId, value === 'yes');
+				}
 			}
 
+			// Ceremony interest (adults)
+			const ceremonyMatch = key.match(/^guests\[(.+?)\]\.ceremony$/);
+			if (ceremonyMatch) {
+				const guestId = ceremonyMatch[1];
+				if (validGuestIds.has(guestId)) {
+					guestCeremony.set(guestId, {
+						level: String(value),
+						otherText: ''
+					});
+				}
+			}
+
+			const ceremonyOtherMatch = key.match(/^guests\[(.+?)\]\.ceremony_other_text$/);
+			if (ceremonyOtherMatch) {
+				const guestId = ceremonyOtherMatch[1];
+				const existing = guestCeremony.get(guestId);
+				if (existing) existing.otherText = String(value).trim();
+			}
+
+			// Ceremony child opt-in
+			const childOptinMatch = key.match(/^guests\[(.+?)\]\.ceremony_child_optin$/);
+			if (childOptinMatch) {
+				const guestId = childOptinMatch[1];
+				if (validGuestIds.has(guestId) && value === 'true') {
+					guestCeremony.set(guestId, { level: 'yes', otherText: '' });
+				}
+			}
+
+			// Dietary restrictions
 			const dietaryMatch = key.match(/^guests\[(.+?)\]\.dietary\[(.+?)\]$/);
 			if (dietaryMatch) {
 				const [, guestId, restriction] = dietaryMatch;
-				if (!guestDietaryMap.has(guestId)) {
-					guestDietaryMap.set(guestId, { selections: [], other: '' });
-				}
-				if (restriction === 'other') {
-					guestDietaryMap.get(guestId)!.other = String(value);
-				} else {
-					guestDietaryMap.get(guestId)!.selections.push(restriction);
+				if (validGuestIds.has(guestId)) {
+					if (!guestDietary.has(guestId)) {
+						guestDietary.set(guestId, { selections: [], other: '' });
+					}
+					if (restriction === 'other') {
+						guestDietary.get(guestId)!.other = String(value);
+					} else {
+						guestDietary.get(guestId)!.selections.push(restriction);
+					}
 				}
 			}
 
+			// Song request
 			const songMatch = key.match(/^guests\[(.+?)\]\.song_request$/);
 			if (songMatch) {
-				const [, guestId] = songMatch;
-				guestSongMap.set(guestId, String(value));
-			}
-
-			const contactMatch = key.match(/^guests\[(.+?)\]\.(\w+)$/);
-			if (contactMatch) {
-				const [, guestId, field] = contactMatch;
-				if (contactFields.has(field)) {
-					if (!guestContactMap.has(guestId)) {
-						guestContactMap.set(guestId, {
-							email: '',
-							phone: '',
-							address_street: '',
-							address_unit: '',
-							address_city: '',
-							address_state: '',
-							address_zip: ''
-						});
-					}
-					(guestContactMap.get(guestId)! as Record<string, string>)[field] =
-						String(value).trim();
+				const guestId = songMatch[1];
+				if (validGuestIds.has(guestId)) {
+					guestSongs.set(guestId, String(value));
 				}
 			}
 		}
 
-		// Build upsert records
-		for (const [guestId, events] of guestEventMap) {
-			if (!validGuestIds.has(guestId)) continue;
-
-			for (const [eventId, attending] of events) {
-				rsvpUpdates.push({
-					guest_id: guestId,
-					event_id: eventId,
-					attending,
-					dietary_restrictions: guestDietaryMap.get(guestId) ?? {
-						selections: [],
-						other: ''
-					},
-					song_request: guestSongMap.get(guestId) ?? ''
-				});
-			}
-		}
-
-		// Upsert all RSVPs
-		for (const rsvp of rsvpUpdates) {
-			const { error: upsertError } = await supabase.from('rsvps').upsert(
-				{
-					...rsvp,
-					submitted_at: new Date().toISOString(),
-					updated_at: new Date().toISOString()
-				},
-				{ onConflict: 'guest_id,event_id' }
-			);
-
-			if (upsertError) {
-				console.error('RSVP upsert error:', upsertError);
-				return { success: false, message: 'Something went wrong. Please try again.' };
-			}
-		}
-
-		// Upsert contact info for adult guests
+		// 3. Upsert household contact info (only on first submission)
 		const serviceClient = createServiceClient();
-		for (const [guestId, contact] of guestContactMap) {
-			if (!validGuestIds.has(guestId)) continue;
-			if (!contact.email) continue;
-
-			// Validate email format
-			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) {
-				return { success: false, message: 'Please enter a valid email address.' };
-			}
-
-			// Validate state if provided
-			if (contact.address_state && !validStateValues.has(contact.address_state)) {
-				return { success: false, message: 'Please select a valid state.' };
-			}
-
-			// Validate ZIP if provided
-			if (contact.address_zip && !/^\d{5}(-\d{4})?$/.test(contact.address_zip)) {
-				return { success: false, message: 'Please enter a valid ZIP code.' };
-			}
-
-			const { error: contactError } = await serviceClient.from('guest_contact_info').upsert(
-				{
-					guest_id: guestId,
-					email: contact.email,
-					phone: contact.phone || null,
-					address_street: contact.address_street || null,
-					address_unit: contact.address_unit || null,
-					address_city: contact.address_city || null,
-					address_state: contact.address_state || null,
-					address_zip: contact.address_zip || null,
-					updated_at: new Date().toISOString()
-				},
-				{ onConflict: 'guest_id' }
-			);
+		if (isFirstSubmission && (householdContact.email || !hasAdults)) {
+			const { error: contactError } = await serviceClient
+				.from('household_contact_info')
+				.upsert(
+					{
+						household_id: household.id,
+						email: householdContact.email || '',
+						phone: householdContact.phone,
+						address_street: householdContact.address_street,
+						address_city: householdContact.address_city,
+						address_state: householdContact.address_state,
+						address_country: householdContact.address_country,
+						address_postal_code: householdContact.address_postal_code,
+						updated_at: new Date().toISOString()
+					},
+					{ onConflict: 'household_id' }
+				);
 
 			if (contactError) {
 				console.error('Contact info upsert error:', contactError);
@@ -220,6 +186,61 @@ export const actions: Actions = {
 					success: false,
 					message: 'Something went wrong saving contact info. Please try again.'
 				};
+			}
+		}
+
+		// 4. Upsert RSVPs (one per guest)
+		for (const guestId of validGuestIds) {
+			const attending = guestAttending.get(guestId) ?? null;
+			const dietary = guestDietary.get(guestId) ?? { selections: [], other: '' };
+			const song = guestSongs.get(guestId) ?? '';
+
+			const { error: rsvpError } = await supabase.from('rsvps').upsert(
+				{
+					guest_id: guestId,
+					attending,
+					dietary_restrictions: dietary,
+					song_request: song,
+					submitted_at: new Date().toISOString(),
+					updated_at: new Date().toISOString()
+				},
+				{ onConflict: 'guest_id' }
+			);
+
+			if (rsvpError) {
+				console.error('RSVP upsert error:', rsvpError);
+				return { success: false, message: 'Something went wrong. Please try again.' };
+			}
+		}
+
+		// 5. Upsert ceremony interest
+		for (const [guestId, ceremonyData] of guestCeremony) {
+			if (!validGuestIds.has(guestId)) continue;
+			if (!VALID_CEREMONY_LEVELS.has(ceremonyData.level)) continue;
+
+			const { error: ceremonyError } = await supabase.from('ceremony_interest').upsert(
+				{
+					guest_id: guestId,
+					interest_level: ceremonyData.level,
+					other_text: ceremonyData.level === 'other' ? ceremonyData.otherText : null,
+					updated_at: new Date().toISOString()
+				},
+				{ onConflict: 'guest_id' }
+			);
+
+			if (ceremonyError) {
+				console.error('Ceremony interest upsert error:', ceremonyError);
+				return {
+					success: false,
+					message: 'Something went wrong saving ceremony interest. Please try again.'
+				};
+			}
+		}
+
+		// 6. Clean up ceremony interest for children NOT opted in
+		for (const guestId of childGuestIds) {
+			if (!guestCeremony.has(guestId)) {
+				await supabase.from('ceremony_interest').delete().eq('guest_id', guestId);
 			}
 		}
 

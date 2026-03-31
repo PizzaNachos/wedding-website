@@ -4,16 +4,20 @@
 		price: number;
 		emoji: string;
 		image?: string;
+		href?: string;
 	}
 
-	let { name, price, emoji, image }: Props = $props();
+	let { name, price, emoji, image, href }: Props = $props();
 
 	let showFallback = $state(false);
 	let loaded = $state(false);
 </script>
 
-<div
-	class="overflow-hidden rounded-lg border border-burgundy-light bg-white shadow-sm transition-transform hover:scale-[1.02]"
+<a
+	{href}
+	target="_blank"
+	rel="noopener noreferrer"
+	class="block overflow-hidden rounded-lg border border-burgundy-light bg-white shadow-sm transition-transform hover:scale-[1.02]"
 >
 	<div class="flex aspect-square items-center justify-center overflow-hidden bg-ivory">
 		{#if image && !showFallback}
@@ -35,4 +39,4 @@
 		<h3 class="font-serif text-sm text-brown">{name}</h3>
 		<p class="mt-0.5 text-xs font-semibold text-brown-light">${price}</p>
 	</div>
-</div>
+</a>

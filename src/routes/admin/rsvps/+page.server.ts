@@ -7,28 +7,33 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	const search = url.searchParams.get('search') ?? '';
 	const statusFilter = url.searchParams.get('status') ?? '';
-	const eventFilter = url.searchParams.get('event') ?? '';
 	const dietaryFilter = url.searchParams.get('dietary') ?? '';
+	const ceremonyFilter = url.searchParams.get('ceremony') ?? '';
 
-	// Get all events for filter dropdown
-	const { data: events } = await supabase
-		.from('events')
-		.select('id, name')
-		.order('date', { ascending: true });
-
-	// Get all guests with their event assignments and RSVPs
+	// Get all guests with RSVPs
 	const { data: guests } = await supabase
 		.from('guests')
-		.select('id, first_name, last_name, is_child, household_id, households(name), guest_events(event_id, events(id, name)), rsvps(id, event_id, attending, dietary_restrictions, song_request, submitted_at, updated_at)')
+		.select(
+			'id, first_name, last_name, is_child, household_id, households(name), rsvps(id, attending, dietary_restrictions, song_request, submitted_at, updated_at)'
+		)
 		.order('last_name', { ascending: true });
 
-	// Fetch contact info (admin can read this table)
-	const { data: contactInfo } = await supabase
-		.from('guest_contact_info')
+	// Fetch ceremony interest
+	const { data: ceremonyInterest } = await supabase
+		.from('ceremony_interest')
 		.select('*');
 
-	const contactByGuestId = new Map(
-		(contactInfo ?? []).map((c: { guest_id: string }) => [c.guest_id, c])
+	const ceremonyByGuestId = new Map(
+		(ceremonyInterest ?? []).map((c: { guest_id: string }) => [c.guest_id, c])
+	);
+
+	// Fetch household contact info
+	const { data: contactInfo } = await supabase
+		.from('household_contact_info')
+		.select('*');
+
+	const contactByHouseholdId = new Map(
+		(contactInfo ?? []).map((c: { household_id: string }) => [c.household_id, c])
 	);
 
 	// Build flat RSVP rows for the table
@@ -37,9 +42,9 @@ export const load: PageServerLoad = async ({ url }) => {
 		guestId: string;
 		guestName: string;
 		householdName: string;
-		eventId: string;
-		eventName: string;
 		attending: boolean | null;
+		ceremonyInterest: string | null;
+		ceremonyOtherText: string | null;
 		dietaryRestrictions: { selections: string[]; other: string } | null;
 		songRequest: string;
 		email: string | null;
@@ -52,59 +57,52 @@ export const load: PageServerLoad = async ({ url }) => {
 	let rows: RsvpRow[] = [];
 
 	for (const guest of guests ?? []) {
-		for (const ge of guest.guest_events ?? []) {
-			const rsvp = guest.rsvps?.find(
-				(r: { event_id: string }) => r.event_id === ge.event_id
-			);
+		const rsvp = guest.rsvps?.[0]; // One RSVP per guest now
+		const household = guest.households as unknown as { name: string } | null;
+		const ceremony = ceremonyByGuestId.get(guest.id) as {
+			interest_level?: string;
+			other_text?: string;
+		} | undefined;
+		const contact = contactByHouseholdId.get(guest.household_id) as {
+			email?: string;
+			phone?: string;
+			address_street?: string;
+			address_city?: string;
+			address_state?: string;
+			address_country?: string;
+			address_postal_code?: string;
+		} | undefined;
 
-			const household = guest.households as unknown as { name: string } | null;
-			const event = ge.events as unknown as { id: string; name: string } | null;
-			const contact = contactByGuestId.get(guest.id) as {
-				email?: string;
-				phone?: string;
-				address_street?: string;
-				address_unit?: string;
-				address_city?: string;
-				address_state?: string;
-				address_zip?: string;
-			} | undefined;
+		const addressParts = [
+			contact?.address_street,
+			contact?.address_city,
+			contact?.address_state,
+			contact?.address_country,
+			contact?.address_postal_code
+		].filter(Boolean);
 
-			// Format address as single line for display
-			const addressParts = [
-				contact?.address_street,
-				contact?.address_unit,
-				contact?.address_city,
-				contact?.address_state && contact?.address_zip
-					? `${contact.address_state} ${contact.address_zip}`
-					: contact?.address_state || contact?.address_zip
-			].filter(Boolean);
-
-			rows.push({
-				rsvpId: rsvp?.id ?? null,
-				guestId: guest.id,
-				guestName: `${guest.first_name} ${guest.last_name}`,
-				householdName: household?.name ?? '',
-				eventId: ge.event_id,
-				eventName: event?.name ?? '',
-				attending: rsvp?.attending ?? null,
-				dietaryRestrictions: rsvp?.dietary_restrictions ?? null,
-				songRequest: rsvp?.song_request ?? '',
-				email: contact?.email ?? null,
-				phone: contact?.phone ?? null,
-				address: addressParts.length > 0 ? addressParts.join(', ') : null,
-				submittedAt: rsvp?.submitted_at ?? null,
-				updatedAt: rsvp?.updated_at ?? null
-			});
-		}
+		rows.push({
+			rsvpId: rsvp?.id ?? null,
+			guestId: guest.id,
+			guestName: `${guest.first_name} ${guest.last_name}`,
+			householdName: household?.name ?? '',
+			attending: rsvp?.attending ?? null,
+			ceremonyInterest: ceremony?.interest_level ?? null,
+			ceremonyOtherText: ceremony?.other_text ?? null,
+			dietaryRestrictions: rsvp?.dietary_restrictions ?? null,
+			songRequest: rsvp?.song_request ?? '',
+			email: contact?.email ?? null,
+			phone: contact?.phone ?? null,
+			address: addressParts.length > 0 ? addressParts.join(', ') : null,
+			submittedAt: rsvp?.submitted_at ?? null,
+			updatedAt: rsvp?.updated_at ?? null
+		});
 	}
 
 	// Apply filters
 	if (search) {
 		const s = search.toLowerCase();
 		rows = rows.filter((r) => r.guestName.toLowerCase().includes(s));
-	}
-	if (eventFilter) {
-		rows = rows.filter((r) => r.eventId === eventFilter);
 	}
 	if (statusFilter === 'attending') {
 		rows = rows.filter((r) => r.attending === true);
@@ -118,8 +116,11 @@ export const load: PageServerLoad = async ({ url }) => {
 			r.dietaryRestrictions?.selections?.includes(dietaryFilter)
 		);
 	}
+	if (ceremonyFilter) {
+		rows = rows.filter((r) => r.ceremonyInterest === ceremonyFilter);
+	}
 
-	return { rows, events: events ?? [], search, statusFilter, eventFilter, dietaryFilter };
+	return { rows, search, statusFilter, dietaryFilter, ceremonyFilter };
 };
 
 export const actions: Actions = {
@@ -128,7 +129,6 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const guest_id = formData.get('guest_id') as string;
-		const event_id = formData.get('event_id') as string;
 		const attending = formData.get('attending') as string;
 		const song_request = (formData.get('song_request') as string) ?? '';
 
@@ -136,8 +136,8 @@ export const actions: Actions = {
 		const dietarySelections = formData.getAll('dietary_selections') as string[];
 		const dietaryOther = (formData.get('dietary_other') as string) ?? '';
 
-		if (!guest_id || !event_id) {
-			return fail(400, { error: 'Guest and event are required.' });
+		if (!guest_id) {
+			return fail(400, { error: 'Guest is required.' });
 		}
 
 		const attendingValue = attending === 'yes' ? true : attending === 'no' ? false : null;
@@ -145,14 +145,13 @@ export const actions: Actions = {
 		const { error } = await supabase.from('rsvps').upsert(
 			{
 				guest_id,
-				event_id,
 				attending: attendingValue,
 				dietary_restrictions: { selections: dietarySelections, other: dietaryOther },
 				song_request,
 				submitted_at: new Date().toISOString(),
 				updated_at: new Date().toISOString()
 			},
-			{ onConflict: 'guest_id,event_id' }
+			{ onConflict: 'guest_id' }
 		);
 
 		if (error) {

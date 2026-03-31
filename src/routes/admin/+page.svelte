@@ -11,19 +11,28 @@
 <div class="space-y-8">
 	<h1 class="text-2xl font-semibold text-gray-900">Dashboard</h1>
 
-	<!-- Per-event stats -->
-	{#each data.eventStats as event}
-		<section>
-			<h2 class="mb-3 text-lg font-medium text-gray-700">{event.eventName}</h2>
-			<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-				<StatCard label="Invited" value={event.invited} />
-				<StatCard label="Attending" value={event.attending} sublabel="{event.adults} adults, {event.children} children" />
-				<StatCard label="Declined" value={event.declined} />
-				<StatCard label="Pending" value={event.pending} />
-				<StatCard label="Total Guests" value={data.totalGuests} />
-			</div>
-		</section>
-	{/each}
+	<!-- Reception stats -->
+	<section>
+		<h2 class="mb-3 text-lg font-medium text-gray-700">Reception</h2>
+		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+			<StatCard label="Total Guests" value={data.receptionStats.invited} />
+			<StatCard label="Attending" value={data.receptionStats.attending} sublabel="{data.receptionStats.adults} adults, {data.receptionStats.children} children" />
+			<StatCard label="Declined" value={data.receptionStats.declined} />
+			<StatCard label="Pending" value={data.receptionStats.pending} />
+		</div>
+	</section>
+
+	<!-- Ceremony interest stats -->
+	<section>
+		<h2 class="mb-3 text-lg font-medium text-gray-700">Ceremony Interest</h2>
+		<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+			<StatCard label="Yes" value={data.ceremonyStats.yes} />
+			<StatCard label="Maybe" value={data.ceremonyStats.maybe} />
+			<StatCard label="Not Likely" value={data.ceremonyStats.not_likely} />
+			<StatCard label="Other" value={data.ceremonyStats.other} />
+			<StatCard label="No Response" value={data.ceremonyStats.no_response} />
+		</div>
+	</section>
 
 	<!-- Dietary restrictions -->
 	{#if Object.keys(data.dietaryCounts).length > 0}

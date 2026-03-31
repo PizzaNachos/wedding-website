@@ -4,61 +4,52 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async () => {
 	const supabase = createServiceClient();
 
-	// Get all events
-	const { data: events } = await supabase
-		.from('events')
-		.select('id, name')
-		.order('date', { ascending: true });
-
-	// Get all guests with their event assignments and RSVPs
+	// Get all guests
 	const { data: guests } = await supabase
 		.from('guests')
-		.select('id, first_name, last_name, is_child, guest_events(event_id)');
+		.select('id, first_name, last_name, is_child');
 
 	// Get all RSVPs
 	const { data: rsvps } = await supabase
 		.from('rsvps')
-		.select('guest_id, event_id, attending, dietary_restrictions, song_request');
+		.select('guest_id, attending, dietary_restrictions, song_request');
 
-	const eventList = events ?? [];
+	// Get ceremony interest
+	const { data: ceremonyInterest } = await supabase
+		.from('ceremony_interest')
+		.select('guest_id, interest_level');
+
 	const guestList = guests ?? [];
 	const rsvpList = rsvps ?? [];
+	const ceremonyList = ceremonyInterest ?? [];
 
-	// Build per-event stats
-	const eventStats = eventList.map((event) => {
-		// Find all guests invited to this event
-		const invitedGuestIds = new Set(
-			guestList
-				.filter((g) => g.guest_events?.some((ge: { event_id: string }) => ge.event_id === event.id))
-				.map((g) => g.id)
-		);
+	// Reception stats
+	const rsvpByGuest = new Map(rsvpList.map((r) => [r.guest_id, r]));
+	const attending = rsvpList.filter((r) => r.attending === true).length;
+	const declined = rsvpList.filter((r) => r.attending === false).length;
+	const pending = guestList.length - rsvpList.filter((r) => r.attending !== null).length;
 
-		const eventRsvps = rsvpList.filter(
-			(r) => r.event_id === event.id && invitedGuestIds.has(r.guest_id)
-		);
+	const attendingGuests = guestList.filter((g) => rsvpByGuest.get(g.id)?.attending === true);
+	const adults = attendingGuests.filter((g) => !g.is_child).length;
+	const children = attendingGuests.filter((g) => g.is_child).length;
 
-		const attending = eventRsvps.filter((r) => r.attending === true).length;
-		const declined = eventRsvps.filter((r) => r.attending === false).length;
-		const pending = invitedGuestIds.size - eventRsvps.filter((r) => r.attending !== null).length;
+	const receptionStats = {
+		invited: guestList.length,
+		attending,
+		declined,
+		pending,
+		adults,
+		children
+	};
 
-		// Headcount breakdown for attending guests
-		const attendingGuestIds = new Set(
-			eventRsvps.filter((r) => r.attending === true).map((r) => r.guest_id)
-		);
-		const attendingGuests = guestList.filter((g) => attendingGuestIds.has(g.id));
-		const adults = attendingGuests.filter((g) => !g.is_child).length;
-		const children = attendingGuests.filter((g) => g.is_child).length;
-
-		return {
-			eventName: event.name,
-			invited: invitedGuestIds.size,
-			attending,
-			declined,
-			pending,
-			adults,
-			children
-		};
-	});
+	// Ceremony interest stats
+	const ceremonyStats = {
+		yes: ceremonyList.filter((c) => c.interest_level === 'yes').length,
+		maybe: ceremonyList.filter((c) => c.interest_level === 'maybe').length,
+		not_likely: ceremonyList.filter((c) => c.interest_level === 'not_likely').length,
+		other: ceremonyList.filter((c) => c.interest_level === 'other').length,
+		no_response: guestList.filter((g) => !g.is_child).length - ceremonyList.length
+	};
 
 	// Dietary restriction summary (across all attending RSVPs)
 	const dietaryCounts: Record<string, number> = {};
@@ -86,14 +77,11 @@ export const load: PageServerLoad = async () => {
 			};
 		});
 
-	// Overall totals
-	const totalGuests = guestList.length;
-	const totalHouseholds = new Set(guestList.map((g) => g.id)).size; // approximate
-
 	return {
-		eventStats,
+		receptionStats,
+		ceremonyStats,
 		dietaryCounts,
 		songRequests,
-		totalGuests
+		totalGuests: guestList.length
 	};
 };

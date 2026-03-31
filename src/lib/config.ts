@@ -9,6 +9,15 @@ export const VENMO_URL = 'https://venmo.com/your-venmo-here';
 
 export const GOOGLE_PHOTOS_URL = 'https://photos.app.goo.gl/your-album-link-here';
 
+export const STORY_IMAGES = [
+	{ image: '/images/our-story/how-we-met.jpg', imageAlt: 'Michael and Nayeli when they first met' },
+	{ image: '/images/our-story/first-date.jpg', imageAlt: 'Michael and Nayeli on their first date' },
+	{ image: '/images/our-story/falling-in-love.jpg', imageAlt: 'Michael and Nayeli together' },
+	{ image: '/images/our-story/adventures.jpg', imageAlt: 'Michael and Nayeli on an adventure' },
+	{ image: '/images/our-story/proposal.jpg', imageAlt: 'The proposal moment' },
+	{ image: '/images/our-story/big-day.jpg', imageAlt: 'Save the date for the wedding' }
+];
+
 export const GIFT_IDEAS = [
 	{ name: 'Honeymoon Massage', price: 150, emoji: '💆', image: '/images/registry/honeymoon-massage.png' },
 	{ name: 'Ceramic Pan Set', price: 200, emoji: '🍳', image: '/images/registry/ceramic-pan-set.png' },

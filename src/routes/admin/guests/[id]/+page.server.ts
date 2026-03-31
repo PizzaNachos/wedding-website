@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const { data: guest, error: err } = await supabase
 		.from('guests')
-		.select('*, households(id, name), guest_events(event_id), rsvps(event_id, attending, dietary_restrictions, song_request)')
+		.select('*, households(id, name), rsvps(attending, dietary_restrictions, song_request)')
 		.eq('id', params.id)
 		.single();
 
@@ -15,18 +15,21 @@ export const load: PageServerLoad = async ({ params }) => {
 		throw error(404, 'Guest not found');
 	}
 
-	const { data: events } = await supabase
-		.from('events')
-		.select('id, name')
-		.order('date', { ascending: true });
-
 	const { data: households } = await supabase
 		.from('households')
 		.select('id, name')
 		.order('name', { ascending: true });
 
+	// Fetch household contact info
 	const { data: contactInfo } = await supabase
-		.from('guest_contact_info')
+		.from('household_contact_info')
+		.select('*')
+		.eq('household_id', guest.household_id)
+		.maybeSingle();
+
+	// Fetch ceremony interest
+	const { data: ceremonyInterest } = await supabase
+		.from('ceremony_interest')
 		.select('*')
 		.eq('guest_id', params.id)
 		.maybeSingle();
@@ -34,7 +37,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	return {
 		guest,
 		contactInfo,
-		events: events ?? [],
+		ceremonyInterest,
 		households: households ?? []
 	};
 };
@@ -61,21 +64,6 @@ export const actions: Actions = {
 
 		if (guestError) {
 			return fail(500, { error: 'Failed to update guest.' });
-		}
-
-		// Update event assignments
-		const selectedEventIds = formData.getAll('event_ids') as string[];
-
-		// Remove all existing guest_events
-		await supabase.from('guest_events').delete().eq('guest_id', params.id);
-
-		// Insert selected ones
-		if (selectedEventIds.length > 0) {
-			const rows = selectedEventIds.map((event_id) => ({
-				guest_id: params.id,
-				event_id
-			}));
-			await supabase.from('guest_events').insert(rows);
 		}
 
 		return { success: true };

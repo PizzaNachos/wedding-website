@@ -1,11 +1,17 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import './layout.css';
 	import favicon from '$lib/assets/favicon.jpg';
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { COUPLE } from '$lib/config';
+	import { i18n } from '$lib/i18n.svelte';
 
 	let { data, children } = $props();
+
+	onMount(() => {
+		i18n.init();
+	});
 </script>
 
 <svelte:head>

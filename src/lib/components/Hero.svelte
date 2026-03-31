@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { COUPLE, WEDDING_DATE } from '$lib/config';
+	import { i18n } from '$lib/i18n.svelte';
 </script>
 
 <section class="relative flex min-h-screen items-center justify-center bg-burgundy-light/30 px-4">
@@ -10,7 +11,7 @@
 
 	<div class="relative text-center">
 		<p class="mb-4 text-sm font-light uppercase tracking-[0.3em] text-brown-light">
-			Together with their families
+			{i18n.t.hero.together}
 		</p>
 
 		<h1 class="font-script text-6xl leading-tight text-brown sm:text-7xl md:text-8xl">
@@ -22,11 +23,11 @@
 		<div class="mx-auto mt-8 h-px w-24 bg-gold"></div>
 
 		<p class="mt-6 text-sm font-light uppercase tracking-[0.3em] text-brown-light">
-			Request the pleasure of your company
+			{i18n.t.hero.pleasure}
 		</p>
 
 		<p class="mt-4 font-serif text-2xl text-brown sm:text-3xl">
-			{WEDDING_DATE.toLocaleDateString('en-US', {
+			{WEDDING_DATE.toLocaleDateString(i18n.locale === 'es' ? 'es-ES' : 'en-US', {
 				weekday: 'long',
 				month: 'long',
 				day: 'numeric',

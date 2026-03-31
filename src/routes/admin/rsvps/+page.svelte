@@ -6,28 +6,24 @@
 	let { data, form } = $props();
 	let search = $state('');
 	let statusFilter = $state('');
-	let eventFilter = $state('');
 	let dietaryFilter = $state('');
+	let ceremonyFilter = $state('');
 	let editingKey = $state<string | null>(null);
 
 	$effect(() => {
 		search = data.search;
 		statusFilter = data.statusFilter;
-		eventFilter = data.eventFilter;
 		dietaryFilter = data.dietaryFilter;
+		ceremonyFilter = data.ceremonyFilter;
 	});
 
 	function applyFilters() {
 		const params = new URLSearchParams();
 		if (search) params.set('search', search);
 		if (statusFilter) params.set('status', statusFilter);
-		if (eventFilter) params.set('event', eventFilter);
 		if (dietaryFilter) params.set('dietary', dietaryFilter);
+		if (ceremonyFilter) params.set('ceremony', ceremonyFilter);
 		goto(`/admin/rsvps?${params.toString()}`, { invalidateAll: true });
-	}
-
-	function rowKey(row: typeof data.rows[0]): string {
-		return `${row.guestId}-${row.eventId}`;
 	}
 
 	function formatDate(dateStr: string | null): string {
@@ -38,6 +34,25 @@
 			hour: 'numeric',
 			minute: '2-digit'
 		});
+	}
+
+	function formatCeremony(level: string | null, otherText: string | null): string {
+		if (!level) return '—';
+		const labels: Record<string, string> = {
+			yes: 'Yes',
+			maybe: 'Maybe',
+			not_likely: 'Not Likely',
+			other: otherText ? `Other: ${otherText}` : 'Other'
+		};
+		return labels[level] ?? level;
+	}
+
+	function ceremonyCellColor(level: string | null): string {
+		if (level === 'yes') return 'bg-green-100 text-green-700';
+		if (level === 'maybe') return 'bg-yellow-100 text-yellow-700';
+		if (level === 'not_likely') return 'bg-red-100 text-red-700';
+		if (level === 'other') return 'bg-gray-100 text-gray-700';
+		return '';
 	}
 </script>
 
@@ -69,17 +84,18 @@
 			onkeydown={(e) => { if (e.key === 'Enter') applyFilters(); }}
 			class="rounded-lg border border-gray-300 px-3 py-2 text-sm"
 		/>
-		<select bind:value={eventFilter} onchange={applyFilters} class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
-			<option value="">All Events</option>
-			{#each data.events as event}
-				<option value={event.id}>{event.name}</option>
-			{/each}
-		</select>
 		<select bind:value={statusFilter} onchange={applyFilters} class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
 			<option value="">All Statuses</option>
 			<option value="attending">Attending</option>
 			<option value="declined">Declined</option>
 			<option value="pending">Not Responded</option>
+		</select>
+		<select bind:value={ceremonyFilter} onchange={applyFilters} class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
+			<option value="">All Ceremony</option>
+			<option value="yes">Yes</option>
+			<option value="maybe">Maybe</option>
+			<option value="not_likely">Not Likely</option>
+			<option value="other">Other</option>
 		</select>
 		<select bind:value={dietaryFilter} onchange={applyFilters} class="rounded-lg border border-gray-300 px-3 py-2 text-sm">
 			<option value="">All Dietary</option>
@@ -100,24 +116,22 @@
 				<tr class="border-b border-gray-100">
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Guest</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Household</th>
-					<th class="px-4 py-3 text-left font-medium text-gray-500">Event</th>
-					<th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
+					<th class="px-4 py-3 text-left font-medium text-gray-500">Reception</th>
+					<th class="px-4 py-3 text-left font-medium text-gray-500">Ceremony</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Dietary</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Song</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Email</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Phone</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Address</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Submitted</th>
-					<th class="px-4 py-3 text-left font-medium text-gray-500">Updated</th>
 					<th class="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each data.rows as row}
-					{@const key = rowKey(row)}
-					{#if editingKey === key}
+					{#if editingKey === row.guestId}
 						<tr class="border-b border-gray-50">
-							<td colspan="12" class="p-4">
+							<td colspan="11" class="p-4">
 								<form
 									method="POST"
 									action="?/update"
@@ -129,9 +143,8 @@
 									}}
 								>
 									<input type="hidden" name="guest_id" value={row.guestId} />
-									<input type="hidden" name="event_id" value={row.eventId} />
 									<div class="mb-3 text-sm font-medium text-gray-900">
-										{row.guestName} — {row.eventName}
+										{row.guestName}
 									</div>
 									<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 										<label class="block">
@@ -182,7 +195,6 @@
 						<tr class="border-b border-gray-50">
 							<td class="px-4 py-3 font-medium text-gray-900">{row.guestName}</td>
 							<td class="px-4 py-3 text-gray-600">{row.householdName}</td>
-							<td class="px-4 py-3 text-gray-600">{row.eventName}</td>
 							<td class="px-4 py-3">
 								{#if row.attending === true}
 									<span class="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Attending</span>
@@ -190,6 +202,15 @@
 									<span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">Declined</span>
 								{:else}
 									<span class="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">Pending</span>
+								{/if}
+							</td>
+							<td class="px-4 py-3">
+								{#if row.ceremonyInterest}
+									<span class="rounded-full px-2 py-0.5 text-xs font-medium {ceremonyCellColor(row.ceremonyInterest)}">
+										{formatCeremony(row.ceremonyInterest, row.ceremonyOtherText)}
+									</span>
+								{:else}
+									<span class="text-xs text-gray-400">—</span>
 								{/if}
 							</td>
 							<td class="px-4 py-3 text-xs text-gray-600">
@@ -204,16 +225,15 @@
 							<td class="px-4 py-3 text-xs text-gray-600">{row.phone || '—'}</td>
 							<td class="px-4 py-3 text-xs text-gray-600 max-w-48 truncate" title={row.address || ''}>{row.address || '—'}</td>
 							<td class="px-4 py-3 text-xs text-gray-400">{formatDate(row.submittedAt)}</td>
-							<td class="px-4 py-3 text-xs text-gray-400">{formatDate(row.updatedAt)}</td>
 							<td class="px-4 py-3 text-right">
-								<button onclick={() => (editingKey = key)} class="text-sm text-blue-600 hover:text-blue-800">Edit</button>
+								<button onclick={() => (editingKey = row.guestId)} class="text-sm text-blue-600 hover:text-blue-800">Edit</button>
 							</td>
 						</tr>
 					{/if}
 				{/each}
 				{#if data.rows.length === 0}
 					<tr>
-						<td colspan="12" class="px-4 py-8 text-center text-gray-400">No RSVPs found.</td>
+						<td colspan="11" class="px-4 py-8 text-center text-gray-400">No RSVPs found.</td>
 					</tr>
 				{/if}
 			</tbody>

@@ -54,9 +54,11 @@ export const actions: Actions = {
 
 		if (guestIds.length > 0) {
 			await supabase.from('rsvps').delete().in('guest_id', guestIds);
-			await supabase.from('guest_events').delete().in('guest_id', guestIds);
+			await supabase.from('ceremony_interest').delete().in('guest_id', guestIds);
 			await supabase.from('guests').delete().eq('household_id', id);
 		}
+
+		await supabase.from('household_contact_info').delete().eq('household_id', id);
 
 		const { error } = await supabase.from('households').delete().eq('id', id);
 
@@ -65,44 +67,5 @@ export const actions: Actions = {
 		}
 
 		return { success: true };
-	},
-
-	inviteAll: async ({ request }) => {
-		const supabase = createServiceClient();
-		const formData = await request.formData();
-		const householdId = formData.get('household_id') as string;
-
-		if (!householdId) return fail(400, { error: 'Household ID is required.' });
-
-		// Get all guests in this household
-		const { data: guests } = await supabase
-			.from('guests')
-			.select('id')
-			.eq('household_id', householdId);
-
-		// Get all events
-		const { data: events } = await supabase.from('events').select('id');
-
-		if (!guests?.length || !events?.length) {
-			return fail(400, { error: 'No guests or events found.' });
-		}
-
-		// Build guest_event rows (upsert to avoid duplicates)
-		const rows = guests.flatMap((guest) =>
-			events.map((event) => ({
-				guest_id: guest.id,
-				event_id: event.id
-			}))
-		);
-
-		const { error } = await supabase
-			.from('guest_events')
-			.upsert(rows, { onConflict: 'guest_id,event_id' });
-
-		if (error) {
-			return fail(500, { error: 'Failed to invite household to all events.' });
-		}
-
-		return { success: true, message: `Invited all guests to all events.` };
 	}
 };

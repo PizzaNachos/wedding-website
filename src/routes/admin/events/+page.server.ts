@@ -71,10 +71,6 @@ export const actions: Actions = {
 
 		if (!id) return fail(400, { error: 'Event ID is required.' });
 
-		// Delete related guest_events and rsvps first
-		await supabase.from('rsvps').delete().eq('event_id', id);
-		await supabase.from('guest_events').delete().eq('event_id', id);
-
 		const { error } = await supabase.from('events').delete().eq('id', id);
 
 		if (error) {

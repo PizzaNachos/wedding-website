@@ -8,7 +8,6 @@
 	let firstName = $state('');
 	let lastName = $state('');
 	let isChild = $state(false);
-	let checkedEventIds = $state<Set<string>>(new Set());
 </script>
 
 <svelte:head>
@@ -36,7 +35,6 @@
 					firstName = '';
 					lastName = '';
 					isChild = false;
-					checkedEventIds = new Set();
 				}
 			};
 		}}
@@ -84,35 +82,6 @@
 				</label>
 			</div>
 		</div>
-
-		<!-- Event Invitations -->
-		{#if data.events.length > 0}
-			<div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
-				<h2 class="mb-4 text-lg font-medium text-gray-900">Event Invitations</h2>
-				<div class="space-y-3">
-					{#each data.events as event}
-						<label class="flex items-center gap-3 rounded-lg border border-gray-200 p-3">
-							<input
-								type="checkbox"
-								name="event_ids"
-								value={event.id}
-								checked={checkedEventIds.has(event.id)}
-								onchange={(e) => {
-									const target = e.currentTarget;
-									if (target.checked) {
-										checkedEventIds = new Set([...checkedEventIds, event.id]);
-									} else {
-										checkedEventIds = new Set([...checkedEventIds].filter(id => id !== event.id));
-									}
-								}}
-								class="rounded border-gray-300"
-							/>
-							<span class="text-sm font-medium text-gray-900">{event.name}</span>
-						</label>
-					{/each}
-				</div>
-			</div>
-		{/if}
 
 		<div class="flex justify-end">
 			<button

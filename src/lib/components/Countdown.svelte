@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { WEDDING_DATE } from '$lib/config';
+	import { i18n } from '$lib/i18n.svelte';
 
 	let now = $state(new Date());
 
@@ -20,15 +21,15 @@
 
 <section class="bg-ivory px-4 py-16 text-center">
 	{#if isPast}
-		<p class="font-serif text-2xl text-burgundy-dark">We're married!</p>
+		<p class="font-serif text-2xl text-burgundy-dark">{i18n.t.countdown.married}</p>
 	{:else}
-		<h2 class="mb-8 font-serif text-2xl text-brown sm:text-3xl">Counting Down</h2>
+		<h2 class="mb-8 font-serif text-2xl text-brown sm:text-3xl">{i18n.t.countdown.title}</h2>
 		<div class="mx-auto flex max-w-md justify-center gap-4 sm:gap-8">
 			{#each [
-				{ value: days, label: 'Days' },
-				{ value: hours, label: 'Hours' },
-				{ value: minutes, label: 'Minutes' },
-				{ value: seconds, label: 'Seconds' }
+				{ value: days, label: i18n.t.countdown.days },
+				{ value: hours, label: i18n.t.countdown.hours },
+				{ value: minutes, label: i18n.t.countdown.minutes },
+				{ value: seconds, label: i18n.t.countdown.seconds }
 			] as unit}
 				<div class="flex flex-col items-center">
 					<span

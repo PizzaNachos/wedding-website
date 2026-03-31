@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const { data: household, error: err } = await supabase
 		.from('households')
-		.select('*, guests(*, guest_events(event_id))')
+		.select('*, guests(*)')
 		.eq('id', params.id)
 		.single();
 
@@ -15,12 +15,29 @@ export const load: PageServerLoad = async ({ params }) => {
 		throw error(404, 'Household not found');
 	}
 
-	const { data: events } = await supabase
-		.from('events')
-		.select('id, name')
-		.order('date', { ascending: true });
+	const guestIds = household.guests.map((g: { id: string }) => g.id);
 
-	return { household, events: events ?? [] };
+	const { data: rsvps } = await supabase
+		.from('rsvps')
+		.select('guest_id, attending, dietary_restrictions')
+		.in('guest_id', guestIds);
+
+	const rsvpByGuestId: Record<string, { attending: boolean | null; dietary_restrictions: { selections?: string[]; other?: string } | null }> = {};
+	for (const r of rsvps ?? []) {
+		rsvpByGuestId[r.guest_id] = r;
+	}
+
+	const { data: ceremonyInterest } = await supabase
+		.from('ceremony_interest')
+		.select('guest_id, interest_level, other_text')
+		.in('guest_id', guestIds);
+
+	const ceremonyByGuestId: Record<string, { interest_level: string; other_text: string | null }> = {};
+	for (const c of ceremonyInterest ?? []) {
+		ceremonyByGuestId[c.guest_id] = c;
+	}
+
+	return { household, rsvpByGuestId, ceremonyByGuestId };
 };
 
 export const actions: Actions = {
@@ -81,7 +98,7 @@ export const actions: Actions = {
 		if (!guestId) return fail(400, { error: 'Guest ID is required.' });
 
 		await supabase.from('rsvps').delete().eq('guest_id', guestId);
-		await supabase.from('guest_events').delete().eq('guest_id', guestId);
+		await supabase.from('ceremony_interest').delete().eq('guest_id', guestId);
 		const { error: err } = await supabase.from('guests').delete().eq('id', guestId);
 
 		if (err) {

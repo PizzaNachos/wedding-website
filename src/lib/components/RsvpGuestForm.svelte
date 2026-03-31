@@ -1,171 +1,163 @@
 <script lang="ts">
-	import { DIETARY_OPTIONS, US_STATES } from '$lib/types';
-	import type { Guest, Rsvp, DietaryRestrictions, GuestContactInfo } from '$lib/types';
+	import { DIETARY_OPTIONS } from '$lib/types';
+	import { i18n } from '$lib/i18n.svelte';
+	import type { Guest, Rsvp, CeremonyInterest } from '$lib/types';
 
 	interface Props {
 		guest: Guest;
-		existingRsvps: Rsvp[];
-		existingContactInfo: GuestContactInfo | null;
+		existingRsvp: Rsvp | null;
+		existingCeremonyInterest: CeremonyInterest | null;
 	}
 
-	let { guest, existingRsvps, existingContactInfo }: Props = $props();
+	let { guest, existingRsvp, existingCeremonyInterest }: Props = $props();
 
-	function getRsvpForEvent(eventId: string): Rsvp | undefined {
-		return existingRsvps.find((r) => r.guest_id === guest.id && r.event_id === eventId);
-	}
-
-	function getDietarySelections(eventId: string): string[] {
-		const rsvp = getRsvpForEvent(eventId);
-		return rsvp?.dietary_restrictions?.selections ?? [];
-	}
-
-	function getDietaryOther(): string {
-		// Use dietary from any existing RSVP (shared across events for the guest)
-		const rsvp = existingRsvps.find((r) => r.guest_id === guest.id);
-		return rsvp?.dietary_restrictions?.other ?? '';
-	}
-
-	function getSongRequest(): string {
-		const rsvp = existingRsvps.find((r) => r.guest_id === guest.id);
-		return rsvp?.song_request ?? '';
-	}
+	let ceremonySelection = $state<string>(existingCeremonyInterest?.interest_level ?? '');
+	let childCeremonyOptIn = $state<boolean>(
+		guest.is_child && existingCeremonyInterest != null
+	);
 </script>
 
 <div class="rounded-lg border border-burgundy-light bg-white p-6 shadow-sm">
 	<h3 class="mb-4 font-serif text-xl text-brown">
 		{guest.first_name}
 		{guest.last_name}
-		{#if guest.is_child}<span class="ml-2 text-sm font-light text-brown-light">(Child)</span
+		{#if guest.is_child}<span class="ml-2 text-sm font-light text-brown-light">{i18n.t.rsvpForm.child}</span
 			>{/if}
 	</h3>
 
-	<!-- Contact information (adults only) -->
-	{#if !guest.is_child}
-		<div class="mb-6">
-			<p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brown-light">
-				Contact Information
-			</p>
-			<div class="grid gap-3 sm:grid-cols-2">
-				<label class="block">
-					<span class="mb-1 block text-xs text-brown-light">Email <span class="text-burgundy">*</span></span>
-					<input
-						type="email"
-						name="guests[{guest.id}].email"
-						value={existingContactInfo?.email ?? ''}
-						required
-						placeholder="email@example.com"
-						class="w-full rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
-					/>
-				</label>
-				<label class="block">
-					<span class="mb-1 block text-xs text-brown-light">Phone</span>
-					<input
-						type="tel"
-						name="guests[{guest.id}].phone"
-						value={existingContactInfo?.phone ?? ''}
-						placeholder="(555) 123-4567"
-						class="w-full rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
-					/>
-				</label>
-			</div>
-			<div class="mt-3">
-				<span class="mb-1 block text-xs text-brown-light">Mailing Address</span>
-				<div class="grid gap-3">
-					<div class="grid gap-3 sm:grid-cols-3">
-						<input
-							type="text"
-							name="guests[{guest.id}].address_street"
-							value={existingContactInfo?.address_street ?? ''}
-							placeholder="Street address"
-							class="rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy sm:col-span-2"
-						/>
-						<input
-							type="text"
-							name="guests[{guest.id}].address_unit"
-							value={existingContactInfo?.address_unit ?? ''}
-							placeholder="Apt / Unit"
-							class="rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
-						/>
-					</div>
-					<div class="grid gap-3 sm:grid-cols-6">
-						<input
-							type="text"
-							name="guests[{guest.id}].address_city"
-							value={existingContactInfo?.address_city ?? ''}
-							placeholder="City"
-							class="rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy sm:col-span-3"
-						/>
-						<select
-							name="guests[{guest.id}].address_state"
-							class="rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown focus:border-burgundy focus:ring-burgundy sm:col-span-2"
-						>
-							<option value="">State</option>
-							{#each US_STATES as state}
-								<option value={state.value} selected={existingContactInfo?.address_state === state.value}>{state.label}</option>
-							{/each}
-						</select>
-						<input
-							type="text"
-							name="guests[{guest.id}].address_zip"
-							value={existingContactInfo?.address_zip ?? ''}
-							placeholder="ZIP"
-							inputmode="numeric"
-							pattern="[0-9]{5}(-[0-9]{4})?"
-							class="rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
-						/>
-					</div>
-				</div>
-			</div>
+	<!-- Reception Attendance -->
+	<div class="mb-4">
+		<p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brown-light">
+			{i18n.t.rsvpForm.receptionTitle}
+		</p>
+		<p class="mb-3 text-sm text-brown-light">{i18n.t.rsvpForm.receptionSubtitle}</p>
+		<div class="flex gap-3">
+			<label
+				class="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors has-[:checked]:border-burgundy has-[:checked]:bg-burgundy/20"
+			>
+				<input
+					type="radio"
+					name="guests[{guest.id}].attending"
+					value="yes"
+					checked={existingRsvp?.attending === true}
+					class="sr-only"
+				/>
+				<span>{i18n.t.rsvpForm.joyfullyAccepts}</span>
+			</label>
+			<label
+				class="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors has-[:checked]:border-burgundy/30 has-[:checked]:bg-burgundy/10"
+			>
+				<input
+					type="radio"
+					name="guests[{guest.id}].attending"
+					value="no"
+					checked={existingRsvp?.attending === false}
+					class="sr-only"
+				/>
+				<span>{i18n.t.rsvpForm.regretfullyDeclines}</span>
+			</label>
 		</div>
-	{/if}
+	</div>
 
-	<!-- Event attendance -->
-	{#each guest.guest_events as ge}
-		{@const rsvp = getRsvpForEvent(ge.event_id)}
+	<!-- Ceremony Interest -->
+	{#if !guest.is_child}
+		<!-- Adults: graduated interest scale -->
 		<div class="mb-4">
 			<p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brown-light">
-				{ge.events.name} — {ge.events.time}
-				{#if ge.events.location}
-					<span class="font-normal">at {ge.events.location}</span>
-				{/if}
+				{i18n.t.rsvpForm.ceremonyTitle}
 			</p>
-			<div class="flex gap-3">
+			<p class="mb-3 text-xs text-brown-light">
+				{i18n.t.rsvpForm.ceremonyDescription}
+			</p>
+			<div class="flex flex-wrap gap-2">
 				<label
 					class="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors has-[:checked]:border-burgundy has-[:checked]:bg-burgundy/20"
 				>
 					<input
 						type="radio"
-						name="guests[{guest.id}].events[{ge.event_id}].attending"
+						name="guests[{guest.id}].ceremony"
 						value="yes"
-						checked={rsvp?.attending === true}
+						checked={ceremonySelection === 'yes'}
+						onchange={() => (ceremonySelection = 'yes')}
 						class="sr-only"
 					/>
-					<span>Joyfully Accepts</span>
+					<span>{i18n.t.rsvpForm.ceremonyYes}</span>
+				</label>
+				<label
+					class="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors has-[:checked]:border-gold has-[:checked]:bg-gold/20"
+				>
+					<input
+						type="radio"
+						name="guests[{guest.id}].ceremony"
+						value="maybe"
+						checked={ceremonySelection === 'maybe'}
+						onchange={() => (ceremonySelection = 'maybe')}
+						class="sr-only"
+					/>
+					<span>{i18n.t.rsvpForm.ceremonyMaybe}</span>
 				</label>
 				<label
 					class="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors has-[:checked]:border-burgundy/30 has-[:checked]:bg-burgundy/10"
 				>
 					<input
 						type="radio"
-						name="guests[{guest.id}].events[{ge.event_id}].attending"
-						value="no"
-						checked={rsvp?.attending === false}
+						name="guests[{guest.id}].ceremony"
+						value="not_likely"
+						checked={ceremonySelection === 'not_likely'}
+						onchange={() => (ceremonySelection = 'not_likely')}
 						class="sr-only"
 					/>
-					<span>Regretfully Declines</span>
+					<span>{i18n.t.rsvpForm.ceremonyNotLikely}</span>
+				</label>
+				<label
+					class="flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm transition-colors has-[:checked]:border-brown-light has-[:checked]:bg-brown-light/20"
+				>
+					<input
+						type="radio"
+						name="guests[{guest.id}].ceremony"
+						value="other"
+						checked={ceremonySelection === 'other'}
+						onchange={() => (ceremonySelection = 'other')}
+						class="sr-only"
+					/>
+					<span>{i18n.t.rsvpForm.ceremonyOther}</span>
 				</label>
 			</div>
+			{#if ceremonySelection === 'other'}
+				<input
+					type="text"
+					name="guests[{guest.id}].ceremony_other_text"
+					value={existingCeremonyInterest?.interest_level === 'other'
+						? (existingCeremonyInterest.other_text ?? '')
+						: ''}
+					placeholder={i18n.t.rsvpForm.ceremonyOtherPlaceholder}
+					class="mt-3 w-full rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
+				/>
+			{/if}
 		</div>
-	{/each}
+	{:else}
+		<!-- Children: opt-in checkbox -->
+		<div class="mb-4">
+			<label class="flex cursor-pointer items-center gap-2 text-sm text-brown">
+				<input
+					type="checkbox"
+					name="guests[{guest.id}].ceremony_child_optin"
+					value="true"
+					bind:checked={childCeremonyOptIn}
+					class="rounded border-burgundy-light text-burgundy focus:ring-burgundy"
+				/>
+				<span>{i18n.t.rsvpForm.ceremonyChildOptIn.replace('{name}', guest.first_name)}</span>
+			</label>
+		</div>
+	{/if}
 
 	<!-- Dietary restrictions -->
 	<div class="mb-4">
 		<p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brown-light">
-			Dietary Restrictions
+			{i18n.t.rsvpForm.dietaryRestrictions}
 		</p>
 		<div class="flex flex-wrap gap-2">
 			{#each DIETARY_OPTIONS as option}
-				{@const firstEventRsvp = existingRsvps.find((r) => r.guest_id === guest.id)}
 				<label
 					class="flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors has-[:checked]:border-brown-light has-[:checked]:bg-brown-light/20"
 				>
@@ -173,18 +165,18 @@
 						type="checkbox"
 						name="guests[{guest.id}].dietary[{option}]"
 						value="true"
-						checked={firstEventRsvp?.dietary_restrictions?.selections?.includes(option)}
+						checked={existingRsvp?.dietary_restrictions?.selections?.includes(option)}
 						class="sr-only"
 					/>
-					<span>{option}</span>
+					<span>{i18n.t.rsvpForm.dietaryLabels[option] ?? option}</span>
 				</label>
 			{/each}
 		</div>
 		<input
 			type="text"
 			name="guests[{guest.id}].dietary[other]"
-			value={getDietaryOther()}
-			placeholder="Other dietary needs..."
+			value={existingRsvp?.dietary_restrictions?.other ?? ''}
+			placeholder={i18n.t.rsvpForm.dietaryOther}
 			class="mt-3 w-full rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
 		/>
 	</div>
@@ -192,13 +184,13 @@
 	<!-- Song request -->
 	<div>
 		<p class="mb-2 text-sm font-semibold uppercase tracking-wide text-brown-light">
-			Song Request
+			{i18n.t.rsvpForm.songRequest}
 		</p>
 		<input
 			type="text"
 			name="guests[{guest.id}].song_request"
-			value={getSongRequest()}
-			placeholder="What song gets you on the dance floor?"
+			value={existingRsvp?.song_request ?? ''}
+			placeholder={i18n.t.rsvpForm.songPlaceholder}
 			class="w-full rounded-md border-burgundy-light bg-ivory/50 px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
 		/>
 	</div>
