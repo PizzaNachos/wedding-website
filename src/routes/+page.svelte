@@ -12,9 +12,9 @@
 <Hero />
 <Countdown />
 
-<section class="mx-auto max-w-2xl px-4 py-16 text-center">
-	<h2 class="mb-6 font-serif text-2xl text-brown sm:text-3xl">{i18n.t.home.welcome}</h2>
-	<div class="prose prose-lg mx-auto text-brown-light">
+<section class="page-shell page-shell--md page-section text-center">
+	<h2 class="mb-5 font-serif text-2xl text-brown sm:text-3xl">{i18n.t.home.welcome}</h2>
+	<div class="mx-auto prose prose-lg max-w-none text-brown-light prose-p:leading-relaxed">
 		<p>{i18n.t.home.body1}</p>
 		<p>{i18n.t.home.body2}</p>
 	</div>

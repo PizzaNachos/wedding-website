@@ -8,17 +8,19 @@
 	<title>{i18n.t.registry.title} — {COUPLE.partner1} & {COUPLE.partner2}</title>
 </svelte:head>
 
-<section class="mx-auto max-w-4xl px-4 py-16">
+<section class="page-shell page-shell--lg page-section">
 	<div class="mb-10 text-center">
-		<h1 class="font-script text-4xl text-brown sm:text-5xl">{i18n.t.registry.title}</h1>
-		<div class="mx-auto mt-4 h-px w-16 bg-gold"></div>
-		<p class="mt-4 text-brown-light">
+		<h1 class="page-title font-script text-brown">{i18n.t.registry.title}</h1>
+		<div class="section-rule"></div>
+		<p class="mt-4 leading-relaxed text-brown-light">
 			{i18n.t.registry.subtitle}
 		</p>
 	</div>
 
 	<!-- Venmo CTA -->
-	<div class="mb-12 rounded-lg border border-burgundy-light bg-burgundy-light/30 p-8 text-center">
+	<div
+		class="mb-10 rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:mb-12 sm:p-8"
+	>
 		<p class="mb-2 font-serif text-2xl text-brown">{i18n.t.registry.venmoTitle}</p>
 		<p class="mb-6 text-sm text-brown-light">
 			{i18n.t.registry.venmoSubtitle}
@@ -27,7 +29,7 @@
 			href={VENMO_URL}
 			target="_blank"
 			rel="noopener noreferrer"
-			class="inline-block rounded-full bg-[#008CFF] px-8 py-3 text-sm font-semibold tracking-widest text-white uppercase transition-opacity hover:opacity-90"
+			class="touch-target inline-flex w-full items-center justify-center rounded-full bg-[#008CFF] px-8 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-opacity hover:opacity-90 sm:w-auto"
 		>
 			{i18n.t.registry.venmoButton}
 		</a>
@@ -35,9 +37,15 @@
 
 	<!-- Gift ideas grid -->
 	<h2 class="mb-6 text-center font-serif text-2xl text-brown">{i18n.t.registry.giftTitle}</h2>
-	<div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+	<div class="grid grid-cols-1 gap-4 min-[380px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 		{#each GIFT_IDEAS as gift}
-			<GiftCard name={gift.name} price={gift.price} emoji={gift.emoji} image={gift.image} href={VENMO_URL} />
+			<GiftCard
+				name={gift.name}
+				price={gift.price}
+				emoji={gift.emoji}
+				image={gift.image}
+				href={VENMO_URL}
+			/>
 		{/each}
 	</div>
 

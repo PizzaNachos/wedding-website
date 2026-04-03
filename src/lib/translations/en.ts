@@ -8,7 +8,10 @@ export const en = {
 		photos: 'Photos',
 		registry: 'Registry',
 		rsvp: 'RSVP',
-		notYou: 'Not you?'
+		notYou: 'Not you?',
+		languageSwitcher: 'Language switcher',
+		switchToEnglish: 'Switch to English',
+		switchToSpanish: 'Switch to Spanish'
 	},
 	hero: {
 		together: 'Together with their families',
@@ -24,7 +27,8 @@ export const en = {
 	},
 	home: {
 		welcome: 'Welcome',
-		body1: "We are so excited to celebrate our special day with you! Please explore the site for all the details about our wedding, and don't forget to RSVP using the unique link from your invitation.",
+		body1:
+			"We are so excited to celebrate our special day with you! Please explore the site for all the details about our wedding, and don't forget to RSVP using the unique link from your invitation.",
 		body2: "We can't wait to see you there!"
 	},
 	story: {
@@ -48,19 +52,34 @@ export const en = {
 				date: 'Spring\u2013Summer 2023',
 				title: 'Falling in Love',
 				description:
-					"A couple months in, Michael asked the question that made it all official — and she said yes. And if that wasn't enough of a milestone, a month or so later Nayeli found herself needing to avoid writing a paper, so naturally we ended up at the animal shelter. Michael didn't plan on leaving with a cat. And yet. Meet Barry: an orange addition to the family who has been along for the ride ever since."
+					'A couple months in, Michael asked the question that made it all official — and she said yes.'
 			},
 			{
-				date: '2023',
+				date: '2023-2025',
 				title: 'Adventures Together',
 				description:
-					"From trying new restaurants to exploring new cities, every adventure was better with each other. We learned that home isn't a place — it's a person."
+					"From hiking Rocky Mountain trails to vacationing in Crested Butte and Moab, we've explored some of the most beautiful places together. Every adventure was better with each other. We learned that home isn't a place — it's a person."
 			},
 			{
-				date: '2025',
+				date: 'October 2025',
+				id: 'proposal',
 				title: 'The Proposal',
 				description:
-					'And then came the moment that changed everything. A surprise proposal that left one of us speechless (and maybe a little teary-eyed). With shaking hands and a full heart, the question was asked — and the answer was the easiest yes of all time.'
+					'Michael tried to propose multiple times, but every trip he planned turned into a group trip because Nayeli invited friends to join them. So he kept waiting for the right one-on-one moment. After three separate trips, it finally happened - and the answer was the easiest yes of all time.',
+				multiPhotos: [
+					{
+						title: 'Trip One',
+						caption: 'The proposal plan was ready. The surprise friend invite was also ready.'
+					},
+					{
+						title: 'Trip Two',
+						caption: 'Another beautiful trip, another postponed ring moment.'
+					},
+					{
+						title: 'Trip Three',
+						caption: 'Finally just the two of them, finally the question, finally a yes.'
+					}
+				]
 			},
 			{
 				date: 'September 4, 2026',
@@ -68,9 +87,9 @@ export const en = {
 				description:
 					"And now we get to celebrate our love with all of you! We can't wait to start this next chapter surrounded by the people who mean the most to us."
 			}
-		]
-	},
-	faqs: {
+			]
+		},
+		faqs: {
 		title: 'Questions & Answers',
 		subtitle: 'Everything you need to know about our big day.',
 		footer: "Still have questions? Don't hesitate to reach out to us directly!",
@@ -119,38 +138,17 @@ export const en = {
 	},
 	lodging: {
 		title: 'Lodging',
-		subtitle: 'Here are some nearby accommodations for your stay. We recommend booking early!',
-		visitWebsite: 'Visit Website',
+		subtitle:
+			"We recommend booking early and staying near Allenspark if you'd like a shorter drive after the celebration.",
+		featuredBadge: 'Within 5 miles',
+		featuredTitle: 'Allenspark Lodging Recommendations',
+		featuredBody:
+			"If you'd like to stay close to the venue, start with Wild Basin Lodge's curated list of nearby lodging options within 5 miles. It's a helpful roundup of cabins, vacation rentals, and other stays in the area.",
+		featuredCta: 'View 5-Mile Lodging Options',
+		featuredDisclaimer:
+			'Wild Basin notes that these accommodations are not affiliated with the venue, so please review photos, policies, and reviews before booking.',
 		helpTitle: 'Need help with travel arrangements?',
-		helpSubtitle: "Don't hesitate to reach out — we're happy to help!",
-		hotels: [
-			{
-				name: 'The Grand Hotel',
-				address: '123 Main Street, City, State 12345',
-				phone: '(555) 123-4567',
-				website: 'https://example.com',
-				description:
-					'Our recommended hotel, just 5 minutes from the venue. We have a room block reserved — mention our wedding when booking for a discounted rate.',
-				rate: '$149/night'
-			},
-			{
-				name: 'Comfort Inn & Suites',
-				address: '456 Oak Avenue, City, State 12345',
-				phone: '(555) 987-6543',
-				website: 'https://example.com',
-				description: 'A budget-friendly option about 10 minutes from the venue with free breakfast.',
-				rate: '$99/night'
-			},
-			{
-				name: 'Charming Bed & Breakfast',
-				address: '789 Elm Street, City, State 12345',
-				phone: '(555) 456-7890',
-				website: 'https://example.com',
-				description:
-					'For those looking for something extra special — a cozy B&B with beautiful gardens, 15 minutes from the venue.',
-				rate: '$179/night'
-			}
-		]
+		helpSubtitle: "Don't hesitate to reach out — we're happy to help!"
 	},
 	registry: {
 		title: 'Registry',
@@ -183,8 +181,15 @@ export const en = {
 	rsvpCode: {
 		title: 'RSVP',
 		thankYou: 'Thank You!',
-		submitted: 'Your RSVP has been submitted. You can update your response anytime by revisiting this page.',
-		submit: 'Submit RSVP'
+		submitted:
+			'Your RSVP has been submitted. You can update your response anytime by revisiting this page.',
+		submit: 'Submit RSVP',
+		manageTitle: 'Submit or Update Your RSVP',
+		manageSubtitle: 'Review the day at a glance, then update each guest below.',
+		eventsTitle: 'Wedding Day Events',
+		eventsSubtitle: 'A quick look at where the celebration unfolds.',
+		eventsNote: 'Your events are shown here for reference. Your selections stay in the RSVP form.',
+		eventsImageAlt: 'A romantic RSVP illustration for Michael and Nayeli'
 	},
 	rsvpForm: {
 		child: '(Child)',
@@ -199,23 +204,13 @@ export const en = {
 		stateProvince: 'State / Province',
 		country: 'Country',
 		postalCode: 'Postal Code',
-		receptionTitle: 'Reception',
-		receptionSubtitle: 'Will you be joining us for the reception?',
 		joyfullyAccepts: 'Joyfully Accepts',
 		regretfullyDeclines: 'Regretfully Declines',
-		ceremonyTitle: 'Ceremony Interest',
-		ceremonyDescription:
-			'The ceremony is at 4:00 PM, 3 hours before the reception. Seating is limited, so we\u2019re gauging interest to help us plan.',
-		ceremonyYes: 'Yes, I\u2019d love to attend',
-		ceremonyMaybe: 'Maybe, still deciding',
-		ceremonyNotLikely: 'Not likely',
-		ceremonyOther: 'Other',
-		ceremonyOtherPlaceholder: 'Please share your thoughts...',
-		ceremonyChildOptIn: 'I\u2019d like to bring {name} to the ceremony',
 		dietaryRestrictions: 'Dietary Restrictions',
 		dietaryOther: 'Other dietary needs...',
-		songRequest: 'Song Request',
-		songPlaceholder: 'What song gets you on the dance floor?',
+		statusPending: 'Pending',
+		statusAttending: 'Attending',
+		statusDeclined: 'Declined',
 		dietaryLabels: {
 			Vegetarian: 'Vegetarian',
 			Vegan: 'Vegan',

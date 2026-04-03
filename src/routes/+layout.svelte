@@ -29,7 +29,7 @@
 {#if data.gateAuthenticated}
 	<div class="flex min-h-screen flex-col">
 		<Nav />
-		<main class="flex-1">
+		<main class="min-w-0 flex-1">
 			{@render children()}
 		</main>
 		<Footer />

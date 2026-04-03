@@ -22,14 +22,23 @@ export interface Event {
 	time: string;
 	location: string | null;
 	description: string | null;
+	image_path: string | null;
+	address: string | null;
+	sort_order: number;
+}
+
+export interface GuestEvent {
+	id: string;
+	guest_id: string;
+	event_id: string;
 }
 
 export interface Rsvp {
 	id: string;
 	guest_id: string;
+	event_id: string;
 	attending: boolean | null;
 	dietary_restrictions: DietaryRestrictions;
-	song_request: string;
 	submitted_at: string | null;
 	updated_at: string;
 }
@@ -46,24 +55,6 @@ export const DIETARY_OPTIONS = [
 	'Dairy-Free',
 	'Nut Allergy',
 ] as const;
-
-export type CeremonyInterestLevel = 'yes' | 'maybe' | 'not_likely' | 'other';
-
-export const CEREMONY_INTEREST_OPTIONS: CeremonyInterestLevel[] = [
-	'yes',
-	'maybe',
-	'not_likely',
-	'other',
-];
-
-export interface CeremonyInterest {
-	id: string;
-	guest_id: string;
-	interest_level: CeremonyInterestLevel;
-	other_text: string | null;
-	created_at: string;
-	updated_at: string;
-}
 
 export interface HouseholdContactInfo {
 	id: string;

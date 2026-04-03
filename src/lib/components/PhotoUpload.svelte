@@ -53,9 +53,7 @@
 	let uploadedCount = $derived(fileQueue.filter((f) => f.status === 'uploaded').length);
 	let failedCount = $derived(fileQueue.filter((f) => f.status === 'failed').length);
 	let uploadingCount = $derived(fileQueue.filter((f) => f.status === 'uploading').length);
-	let allDone = $derived(
-		fileQueue.length > 0 && pendingCount === 0 && uploadingCount === 0
-	);
+	let allDone = $derived(fileQueue.length > 0 && pendingCount === 0 && uploadingCount === 0);
 
 	// Clean up object URLs when component is destroyed
 	$effect(() => {
@@ -240,17 +238,17 @@
 	}
 </script>
 
-<div class="rounded-lg border-2 border-dashed border-burgundy-light bg-white p-8">
+<div class="rounded-2xl border-2 border-dashed border-burgundy-light bg-white p-5 sm:p-8">
 	<!-- Step indicator -->
-	<div class="mb-6 flex items-center justify-center gap-2 text-xs text-brown-light">
+	<div class="mb-6 flex flex-wrap items-center justify-center gap-2 text-xs text-brown-light">
 		<span
-			class="rounded-full px-2 py-0.5 {step === 'lookup'
+			class="inline-flex min-h-8 items-center rounded-full px-3 py-1 {step === 'lookup'
 				? 'bg-burgundy text-white'
 				: 'bg-burgundy/10 text-burgundy'}">1. Your Name</span
 		>
 		<span class="text-burgundy-light">&rarr;</span>
 		<span
-			class="rounded-full px-2 py-0.5 {step === 'upload'
+			class="inline-flex min-h-8 items-center rounded-full px-3 py-1 {step === 'upload'
 				? 'bg-burgundy text-white'
 				: 'bg-burgundy/10 text-burgundy'}">2. Upload &amp; Tag</span
 		>
@@ -266,19 +264,19 @@
 					e.preventDefault();
 					lookupGuest();
 				}}
-				class="mx-auto flex max-w-sm gap-2"
+				class="action-stack mx-auto max-w-md"
 			>
 				<input
 					type="text"
 					bind:value={nameInput}
 					placeholder="Enter your name"
-					class="flex-1 rounded-lg border border-burgundy-light px-4 py-2 text-brown focus:border-burgundy focus:outline-none"
+					class="touch-target flex-1 rounded-lg border border-burgundy-light px-4 py-3 text-brown focus:border-burgundy focus:outline-none"
 					disabled={lookupLoading}
 				/>
 				<button
 					type="submit"
 					disabled={lookupLoading || !nameInput.trim()}
-					class="rounded-full border-2 border-burgundy px-4 py-2 text-sm font-semibold tracking-widest text-burgundy uppercase transition-colors hover:bg-burgundy hover:text-white disabled:opacity-50"
+					class="touch-target rounded-full border-2 border-burgundy px-5 py-3 text-sm font-semibold tracking-[0.22em] text-burgundy uppercase transition-colors hover:bg-burgundy hover:text-white disabled:opacity-50"
 				>
 					{lookupLoading ? 'Looking up...' : 'Next'}
 				</button>
@@ -301,7 +299,7 @@
 					<span class="mx-1">&middot;</span>
 					<button
 						type="button"
-						class="underline hover:text-brown"
+						class="touch-target px-1 underline hover:text-brown"
 						onclick={() => {
 							guestSession.clear();
 							autoFilled = false;
@@ -315,7 +313,7 @@
 
 			<!-- Drop zone (always visible) -->
 			<div
-				class="mb-6 rounded-lg border-2 border-dashed p-6 transition-colors {dragOver
+				class="mb-6 rounded-xl border-2 border-dashed p-5 transition-colors sm:p-6 {dragOver
 					? 'border-burgundy bg-burgundy/5'
 					: 'border-burgundy-light'}"
 				role="region"
@@ -329,7 +327,7 @@
 			>
 				<p class="mb-2 text-sm text-brown-light">Drag and drop images here, or click to browse</p>
 				<label
-					class="inline-block cursor-pointer rounded-full border-2 border-burgundy px-6 py-2 text-sm font-semibold tracking-widest text-burgundy uppercase transition-colors hover:bg-burgundy hover:text-white"
+					class="touch-target inline-flex cursor-pointer items-center justify-center rounded-full border-2 border-burgundy px-6 py-3 text-sm font-semibold tracking-[0.22em] text-burgundy uppercase transition-colors hover:bg-burgundy hover:text-white"
 				>
 					Choose Photos
 					<input type="file" accept="image/*" multiple class="sr-only" onchange={handleFileInput} />
@@ -338,24 +336,24 @@
 			</div>
 
 			<!-- Tag controls -->
-			<div class="mx-auto mb-6 max-w-sm text-left">
+			<div class="mx-auto mb-6 max-w-md text-left">
 				<label for="tag-input" class="mb-1 block text-sm font-medium text-brown"
 					>Tags (optional)</label
 				>
-				<div class="flex gap-2">
+				<div class="flex flex-col gap-2 sm:flex-row">
 					<input
 						id="tag-input"
 						type="text"
 						bind:value={tagInput}
 						placeholder="Add a tag and press Enter"
-						class="flex-1 rounded-lg border border-burgundy-light px-4 py-2 text-brown focus:border-burgundy focus:outline-none"
+						class="touch-target flex-1 rounded-lg border border-burgundy-light px-4 py-3 text-brown focus:border-burgundy focus:outline-none"
 						onkeydown={handleTagKeydown}
 					/>
 					<button
 						type="button"
 						onclick={addTag}
 						disabled={!tagInput.trim()}
-						class="rounded-lg border border-burgundy px-3 py-2 text-sm text-burgundy transition-colors hover:bg-burgundy hover:text-white disabled:opacity-50"
+						class="touch-target rounded-lg border border-burgundy px-4 py-3 text-sm text-burgundy transition-colors hover:bg-burgundy hover:text-white disabled:opacity-50"
 					>
 						Add
 					</button>
@@ -370,7 +368,7 @@
 								<button
 									type="button"
 									onclick={() => removeTag(tag)}
-									class="text-burgundy hover:text-burgundy-dark"
+									class="touch-target px-1 text-burgundy hover:text-burgundy-dark"
 									aria-label="Remove tag {tag}">&times;</button
 								>
 							</span>
@@ -381,12 +379,12 @@
 
 			<!-- Action bar -->
 			{#if fileQueue.length > 0}
-				<div class="mb-4 flex items-center justify-center gap-3">
+				<div class="mb-4 flex flex-wrap items-center justify-center gap-3">
 					{#if pendingCount > 0}
 						<button
 							type="button"
 							onclick={uploadAll}
-							class="rounded-full border-2 border-burgundy bg-burgundy px-6 py-2 text-sm font-semibold tracking-widest text-white uppercase transition-colors hover:bg-burgundy-dark"
+							class="touch-target rounded-full border-2 border-burgundy bg-burgundy px-6 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-colors hover:bg-burgundy-dark"
 						>
 							Upload All ({pendingCount})
 						</button>
@@ -395,7 +393,7 @@
 						<button
 							type="button"
 							onclick={retryFailed}
-							class="rounded-full border-2 border-burgundy px-4 py-2 text-sm font-semibold tracking-widest text-burgundy uppercase transition-colors hover:bg-burgundy hover:text-white"
+							class="touch-target rounded-full border-2 border-burgundy px-4 py-3 text-sm font-semibold tracking-[0.22em] text-burgundy uppercase transition-colors hover:bg-burgundy hover:text-white"
 						>
 							Retry Failed ({failedCount})
 						</button>
@@ -413,144 +411,149 @@
 
 				{#if allDone && uploadedCount > 0}
 					<p class="mb-4 text-sm text-burgundy">
-						{uploadedCount} photo{uploadedCount !== 1 ? 's' : ''} uploaded successfully! Photos will
-						appear after admin approval.
+						{uploadedCount} photo{uploadedCount !== 1 ? 's' : ''} uploaded successfully! Photos will appear
+						after admin approval.
 					</p>
 				{/if}
 
 				<!-- Thumbnail grid -->
-				<div class="flex flex-wrap justify-center gap-3">
+				<div class="grid grid-cols-2 gap-3 min-[520px]:grid-cols-3 lg:grid-cols-4">
 					{#each fileQueue as entry (entry.id)}
-						<div class="group relative h-30 w-30 overflow-hidden rounded-lg border border-burgundy-light">
-							<img
-								src={entry.thumbnailUrl}
-								alt={entry.file.name}
-								class="h-full w-full object-cover"
-							/>
+						<div
+							class="group relative overflow-hidden rounded-xl border border-burgundy-light bg-white"
+						>
+							<div class="relative aspect-square overflow-hidden">
+								<img
+									src={entry.thumbnailUrl}
+									alt={entry.file.name}
+									class="h-full w-full object-cover"
+								/>
 
-							<!-- Status overlay -->
-							{#if entry.status === 'uploading'}
-								<div
-									class="absolute inset-0 flex items-center justify-center bg-white/70"
-								>
-									<svg
-										class="h-8 w-8 animate-spin text-burgundy"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-									>
-										<circle
-											class="opacity-25"
-											cx="12"
-											cy="12"
-											r="10"
+								<!-- Status overlay -->
+								{#if entry.status === 'uploading'}
+									<div class="absolute inset-0 flex items-center justify-center bg-white/70">
+										<svg
+											class="h-8 w-8 animate-spin text-burgundy"
+											xmlns="http://www.w3.org/2000/svg"
+											fill="none"
+											viewBox="0 0 24 24"
+										>
+											<circle
+												class="opacity-25"
+												cx="12"
+												cy="12"
+												r="10"
+												stroke="currentColor"
+												stroke-width="4"
+											></circle>
+											<path
+												class="opacity-75"
+												fill="currentColor"
+												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+											></path>
+										</svg>
+									</div>
+								{:else if entry.status === 'uploaded'}
+									<div class="absolute inset-0 flex items-center justify-center bg-green-900/40">
+										<svg
+											class="h-10 w-10 text-white"
+											fill="none"
 											stroke="currentColor"
-											stroke-width="4"
-										></circle>
-										<path
-											class="opacity-75"
-											fill="currentColor"
-											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-										></path>
-									</svg>
-								</div>
-							{:else if entry.status === 'uploaded'}
-								<div
-									class="absolute inset-0 flex items-center justify-center bg-green-900/40"
-								>
-									<svg
-										class="h-10 w-10 text-white"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
+											viewBox="0 0 24 24"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="3"
+												d="M5 13l4 4L19 7"
+											></path>
+										</svg>
+									</div>
+								{:else if entry.status === 'failed'}
+									<div
+										class="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-red-900/40"
 									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="3"
-											d="M5 13l4 4L19 7"
-										></path>
-									</svg>
-								</div>
-							{:else if entry.status === 'failed'}
-								<div
-									class="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-red-900/40"
-								>
-									<svg
-										class="h-6 w-6 text-white"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-										></path>
-									</svg>
-									<button
-										type="button"
-										onclick={() => {
-											entry.retryCount = 0;
-											uploadFile(entry);
-										}}
-										class="rounded bg-white/90 px-2 py-0.5 text-xs font-medium text-red-700 hover:bg-white"
-									>
-										Retry
-									</button>
-								</div>
-							{:else}
-								<!-- Pending: upload button on hover -->
-								<div
-									class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity group-hover:bg-black/20 group-hover:opacity-100"
-								>
-									<button
-										type="button"
-										onclick={() => uploadFile(entry)}
-										class="rounded-full bg-white/90 p-2 text-burgundy shadow hover:bg-white"
-										aria-label="Upload {entry.file.name}"
-									>
-										<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<svg
+											class="h-6 w-6 text-white"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
 											<path
 												stroke-linecap="round"
 												stroke-linejoin="round"
 												stroke-width="2"
-												d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-8l-4-4m0 0L8 8m4-4v12"
+												d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 											></path>
 										</svg>
-									</button>
-								</div>
-							{/if}
+										<button
+											type="button"
+											onclick={() => {
+												entry.retryCount = 0;
+												uploadFile(entry);
+											}}
+											class="touch-target rounded bg-white/90 px-3 py-2 text-xs font-medium text-red-700 hover:bg-white"
+										>
+											Retry
+										</button>
+									</div>
+								{:else}
+									<!-- Pending: upload button on hover -->
+									<div
+										class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-100 transition-opacity md:bg-black/0 md:opacity-0 md:group-hover:bg-black/20 md:group-hover:opacity-100"
+									>
+										<button
+											type="button"
+											onclick={() => uploadFile(entry)}
+											class="touch-target rounded-full bg-white/90 p-2 text-burgundy shadow hover:bg-white"
+											aria-label="Upload {entry.file.name}"
+										>
+											<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-8l-4-4m0 0L8 8m4-4v12"
+												></path>
+											</svg>
+										</button>
+									</div>
+								{/if}
 
-							<!-- Download button -->
-							<button
-								type="button"
-								onclick={() => downloadFile(entry)}
-								class="absolute bottom-1 left-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
-								aria-label="Download {entry.file.name}"
-							>
-								<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										stroke-width="2"
-										d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V4"
-									></path>
-								</svg>
-							</button>
-
-							<!-- Remove button (pending/failed only) -->
-							{#if entry.status === 'pending' || entry.status === 'failed'}
+								<!-- Download button -->
 								<button
 									type="button"
-									onclick={() => removeFile(entry)}
-									class="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-xs text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
-									aria-label="Remove {entry.file.name}"
+									onclick={() => downloadFile(entry)}
+									class="absolute bottom-2 left-2 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white opacity-100 transition-opacity hover:bg-black/70 md:h-8 md:w-8 md:opacity-0 md:group-hover:opacity-100"
+									aria-label="Download {entry.file.name}"
 								>
-									&times;
+									<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2m-4-4l-4 4m0 0l-4-4m4 4V4"
+										></path>
+									</svg>
 								</button>
-							{/if}
+
+								<!-- Remove button (pending/failed only) -->
+								{#if entry.status === 'pending' || entry.status === 'failed'}
+									<button
+										type="button"
+										onclick={() => removeFile(entry)}
+										class="absolute top-2 right-2 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-lg text-white opacity-100 transition-opacity hover:bg-black/70 md:h-8 md:w-8 md:text-xs md:opacity-0 md:group-hover:opacity-100"
+										aria-label="Remove {entry.file.name}"
+									>
+										&times;
+									</button>
+								{/if}
+							</div>
+							<div
+								class="border-t border-burgundy-light/60 px-2 py-2 text-left text-[0.7rem] text-brown-light"
+							>
+								<p class="truncate" title={entry.file.name}>{entry.file.name}</p>
+							</div>
 						</div>
 					{/each}
 				</div>
@@ -560,7 +563,7 @@
 				<button
 					type="button"
 					onclick={startOver}
-					class="text-sm text-brown-light underline hover:text-brown"
+					class="touch-target px-1 text-sm text-brown-light underline hover:text-brown"
 				>
 					Start over
 				</button>

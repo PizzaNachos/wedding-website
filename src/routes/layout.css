@@ -20,10 +20,23 @@ html {
 	scroll-behavior: smooth;
 }
 
+html,
+body {
+	min-height: 100%;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 body {
 	font-family: var(--font-family-sans);
 	color: var(--color-brown);
 	background-color: var(--color-ivory);
+	line-height: 1.5;
+	overflow-x: hidden;
 }
 
 h1,
@@ -31,4 +44,127 @@ h2,
 h3,
 h4 {
 	font-family: var(--font-family-serif);
+	line-height: 1.1;
+	overflow-wrap: anywhere;
+}
+
+p,
+li,
+a,
+span,
+label {
+	overflow-wrap: anywhere;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+	font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea,
+[role='button'] {
+	touch-action: manipulation;
+}
+
+main {
+	overflow-x: clip;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-burgundy);
+	outline-offset: 3px;
+}
+
+.page-shell {
+	margin-inline: auto;
+	width: 100%;
+	padding-inline: 1rem;
+}
+
+.page-shell--sm {
+	max-width: 40rem;
+}
+
+.page-shell--md {
+	max-width: 48rem;
+}
+
+.page-shell--lg {
+	max-width: 64rem;
+}
+
+.page-shell--xl {
+	max-width: 80rem;
+}
+
+.page-section {
+	padding-block: 3rem;
+}
+
+.page-title {
+	font-size: clamp(2.5rem, 11vw, 3.5rem);
+	line-height: 0.98;
+}
+
+.section-rule {
+	margin-inline: auto;
+	margin-top: 1rem;
+	height: 1px;
+	width: 4rem;
+	background: var(--color-gold);
+}
+
+.safe-wrap {
+	overflow-wrap: anywhere;
+	word-break: normal;
+}
+
+.touch-target {
+	min-height: 44px;
+	min-width: 44px;
+}
+
+.compact-frame {
+	border-width: 12px;
+}
+
+.action-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+	.page-shell {
+		padding-inline: 1.5rem;
+	}
+
+	.page-section {
+		padding-block: 4rem;
+	}
+
+	.compact-frame {
+		border-width: 16px;
+	}
+
+	.action-stack {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	}
 }

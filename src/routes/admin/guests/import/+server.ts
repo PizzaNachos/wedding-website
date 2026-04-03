@@ -46,6 +46,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const text = await file.text();
 	const { headers, rows } = parseCSV(text);
 
+	// Pre-fetch events for event assignment
+	const { data: allEvents } = await supabase.from('events').select('id, name');
+	const eventLookup = new Map(
+		(allEvents ?? []).map((e) => [e.name.toLowerCase(), e.id])
+	);
+
 	// Validate required headers
 	const missingHeaders = REQUIRED_HEADERS.filter((h) => !headers.includes(h));
 	if (missingHeaders.length > 0) {
@@ -145,17 +151,35 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			const isChild = row['is_child']?.trim() ? parseBoolean(row['is_child']) : false;
 
-			const { error: guestErr } = await supabase.from('guests').insert({
-				household_id: householdId,
-				first_name: firstName,
-				last_name: lastName,
-				is_child: isChild
-			});
+			const { data: newGuest, error: guestErr } = await supabase
+				.from('guests')
+				.insert({
+					household_id: householdId,
+					first_name: firstName,
+					last_name: lastName,
+					is_child: isChild
+				})
+				.select('id')
+				.single();
 
-			if (guestErr) {
+			if (guestErr || !newGuest) {
 				result.errors.push({ row: globalRowIndex, reason: `Failed to insert guest: ${firstName} ${lastName}` });
 			} else {
 				result.imported.guests++;
+
+				// Assign events from the 'events' column if present
+				const eventNames = row['events']?.split(',').map((e) => e.trim()).filter(Boolean) ?? [];
+				if (eventNames.length > 0) {
+					const eventIdsToAssign = eventNames
+						.map((name) => eventLookup.get(name.toLowerCase()))
+						.filter(Boolean) as string[];
+
+					if (eventIdsToAssign.length > 0) {
+						await supabase.from('guest_events').insert(
+							eventIdsToAssign.map((eventId) => ({ guest_id: newGuest.id, event_id: eventId }))
+						);
+					}
+				}
 			}
 
 			globalRowIndex++;

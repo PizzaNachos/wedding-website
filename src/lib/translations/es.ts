@@ -10,6 +10,9 @@ export const es: Translation = {
 		photos: 'Fotos',
 		registry: 'Regalos',
 		rsvp: 'RSVP',
+		languageSwitcher: 'Selector de idioma',
+		switchToEnglish: 'Cambiar a ingles',
+		switchToSpanish: 'Cambiar a espanol',
 		notYou: '¿No eres tú?'
 	},
 	hero: {
@@ -26,7 +29,8 @@ export const es: Translation = {
 	},
 	home: {
 		welcome: 'Bienvenidos',
-		body1: '¡Estamos muy emocionados de celebrar nuestro día especial con ustedes! Explora el sitio para encontrar todos los detalles de nuestra boda, y no olvides confirmar tu asistencia usando el enlace único de tu invitación.',
+		body1:
+			'¡Estamos muy emocionados de celebrar nuestro día especial con ustedes! Explora el sitio para encontrar todos los detalles de nuestra boda, y no olvides confirmar tu asistencia usando el enlace único de tu invitación.',
 		body2: '¡No podemos esperar para verlos!'
 	},
 	story: {
@@ -56,13 +60,28 @@ export const es: Translation = {
 				date: '2023',
 				title: 'Aventuras Juntos',
 				description:
-					'Desde probar nuevos restaurantes hasta explorar nuevas ciudades, cada aventura fue mejor el uno con el otro. Aprendimos que el hogar no es un lugar — es una persona.'
+					'Desde caminar por los senderos de las Montañas Rocosas hasta vacaciones en Crested Butte y Moab, hemos explorado algunos de los lugares más hermosos juntos. Cada aventura fue mejor el uno con el otro. Aprendimos que el hogar no es un lugar — es una persona.'
 			},
 			{
 				date: '2025',
+				id: 'proposal',
 				title: 'La Propuesta',
 				description:
-					'Y luego llegó el momento que lo cambió todo. Una propuesta sorpresa que dejó a uno de nosotros sin palabras (y quizás con algunos lagrimones). Con manos temblorosas y el corazón lleno, se hizo la pregunta — y la respuesta fue el sí más fácil de todos los tiempos.'
+					'Michael intento proponerle matrimonio varias veces, pero cada viaje que planeaba se convertia en viaje grupal porque Nayeli invitaba amigos. Asi que el siguio esperando el momento correcto para estar a solas. Despues de tres viajes separados, por fin paso - y la respuesta fue el si mas facil de todos los tiempos.',
+				multiPhotos: [
+					{
+						title: 'Viaje Uno',
+						caption: 'El plan de propuesta estaba listo. La invitacion sorpresa de amigos tambien.'
+					},
+					{
+						title: 'Viaje Dos',
+						caption: 'Otro viaje hermoso, otro momento del anillo pospuesto.'
+					},
+					{
+						title: 'Viaje Tres',
+						caption: 'Por fin estuvieron a solas, por fin llego la pregunta, por fin un si.'
+					}
+				]
 			},
 			{
 				date: '4 de Septiembre, 2026',
@@ -70,7 +89,7 @@ export const es: Translation = {
 				description:
 					'¡Y ahora podemos celebrar nuestro amor con todos ustedes! No podemos esperar para comenzar este próximo capítulo rodeados de las personas que más nos importan.'
 			}
-		]
+			]
 	},
 	faqs: {
 		title: 'Preguntas y Respuestas',
@@ -121,38 +140,17 @@ export const es: Translation = {
 	},
 	lodging: {
 		title: 'Alojamiento',
-		subtitle: 'Aquí hay algunos alojamientos cercanos para tu estadía. ¡Recomendamos reservar con anticipación!',
-		visitWebsite: 'Visitar Sitio Web',
+		subtitle:
+			'Recomendamos reservar con anticipación y hospedarse cerca de Allenspark si quieren un trayecto más corto después de la celebración.',
+		featuredBadge: 'A 5 millas',
+		featuredTitle: 'Recomendaciones de hospedaje en Allenspark',
+		featuredBody:
+			'Si quieren quedarse cerca del lugar, empiecen con la lista de hospedajes cercanos que comparte Wild Basin Lodge dentro de 5 millas. Es una guía útil de cabañas, rentas vacacionales y otras opciones en la zona.',
+		featuredCta: 'Ver opciones de hospedaje a 5 millas',
+		featuredDisclaimer:
+			'Wild Basin indica que estos alojamientos no están afiliados con el lugar, así que les recomendamos revisar fotos, políticas y reseñas antes de reservar.',
 		helpTitle: '¿Necesitas ayuda con los arreglos de viaje?',
-		helpSubtitle: '¡No dudes en comunicarte — estamos felices de ayudar!',
-		hotels: [
-			{
-				name: 'The Grand Hotel',
-				address: '123 Main Street, City, State 12345',
-				phone: '(555) 123-4567',
-				website: 'https://example.com',
-				description:
-					'Nuestro hotel recomendado, a solo 5 minutos del lugar. Tenemos un bloque de habitaciones reservadas — menciona nuestra boda al reservar para obtener una tarifa con descuento.',
-				rate: '$149/noche'
-			},
-			{
-				name: 'Comfort Inn & Suites',
-				address: '456 Oak Avenue, City, State 12345',
-				phone: '(555) 987-6543',
-				website: 'https://example.com',
-				description: 'Una opción económica a unos 10 minutos del lugar con desayuno gratuito.',
-				rate: '$99/noche'
-			},
-			{
-				name: 'Charming Bed & Breakfast',
-				address: '789 Elm Street, City, State 12345',
-				phone: '(555) 456-7890',
-				website: 'https://example.com',
-				description:
-					'Para quienes buscan algo especial — un acogedor B&B con hermosos jardines, a 15 minutos del lugar.',
-				rate: '$179/noche'
-			}
-		]
+		helpSubtitle: '¡No dudes en comunicarte — estamos felices de ayudar!'
 	},
 	registry: {
 		title: 'Lista de Regalos',
@@ -162,7 +160,8 @@ export const es: Translation = {
 		venmoSubtitle: '¡No olvides incluir una nota con qué "regalo" te inspiró!',
 		venmoButton: 'Abrir Venmo',
 		giftTitle: 'Inspiración para Regalos',
-		giftFooter: '¡Estas son solo ideas de inspiración — cualquier cantidad es profundamente apreciada!'
+		giftFooter:
+			'¡Estas son solo ideas de inspiración — cualquier cantidad es profundamente apreciada!'
 	},
 	photos: {
 		title: 'Fotos',
@@ -185,8 +184,16 @@ export const es: Translation = {
 	rsvpCode: {
 		title: 'RSVP',
 		thankYou: '¡Gracias!',
-		submitted: 'Tu RSVP ha sido enviado. Puedes actualizar tu respuesta en cualquier momento volviendo a esta página.',
-		submit: 'Enviar RSVP'
+		submitted:
+			'Tu RSVP ha sido enviado. Puedes actualizar tu respuesta en cualquier momento volviendo a esta página.',
+		submit: 'Enviar RSVP',
+		manageTitle: 'Enviar o Actualizar RSVP',
+		manageSubtitle: 'Revisa el dia y actualiza la respuesta de cada invitado abajo.',
+		eventsTitle: 'Eventos del Dia',
+		eventsSubtitle: 'Un vistazo rapido a donde se desarrolla la celebracion.',
+		eventsNote:
+			'Tus eventos aparecen aquí como referencia. Tus selecciones siguen en el formulario.',
+		eventsImageAlt: 'Ilustracion romantica para el RSVP de Michael y Nayeli'
 	},
 	rsvpForm: {
 		child: '(Niño/a)',
@@ -201,23 +208,13 @@ export const es: Translation = {
 		stateProvince: 'Estado / Provincia',
 		country: 'País',
 		postalCode: 'Código Postal',
-		receptionTitle: 'Recepción',
-		receptionSubtitle: '¿Nos acompañarás en la recepción?',
 		joyfullyAccepts: 'Acepta Con Gusto',
 		regretfullyDeclines: 'Declina Con Pesar',
-		ceremonyTitle: 'Interés en la Ceremonia',
-		ceremonyDescription:
-			'La ceremonia es a las 4:00 PM, 3 horas antes de la recepción. Los asientos son limitados, así que estamos evaluando el interés para planificar.',
-		ceremonyYes: 'Sí, me encantaría asistir',
-		ceremonyMaybe: 'Tal vez, aún decidiendo',
-		ceremonyNotLikely: 'Poco probable',
-		ceremonyOther: 'Otro',
-		ceremonyOtherPlaceholder: 'Por favor comparte tus pensamientos...',
-		ceremonyChildOptIn: 'Me gustaría llevar a {name} a la ceremonia',
 		dietaryRestrictions: 'Restricciones Alimentarias',
 		dietaryOther: 'Otras necesidades alimentarias...',
-		songRequest: 'Solicitud de Canción',
-		songPlaceholder: '¿Qué canción te saca a bailar?',
+		statusPending: 'Pendiente',
+		statusAttending: 'Asistira',
+		statusDeclined: 'No asistira',
 		dietaryLabels: {
 			Vegetarian: 'Vegetariano/a',
 			Vegan: 'Vegano/a',

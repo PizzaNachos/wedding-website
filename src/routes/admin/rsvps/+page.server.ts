@@ -8,61 +8,48 @@ export const load: PageServerLoad = async ({ url }) => {
 	const search = url.searchParams.get('search') ?? '';
 	const statusFilter = url.searchParams.get('status') ?? '';
 	const dietaryFilter = url.searchParams.get('dietary') ?? '';
-	const ceremonyFilter = url.searchParams.get('ceremony') ?? '';
 
-	// Get all guests with RSVPs
-	const { data: guests } = await supabase
-		.from('guests')
-		.select(
-			'id, first_name, last_name, is_child, household_id, households(name), rsvps(id, attending, dietary_restrictions, song_request, submitted_at, updated_at)'
-		)
-		.order('last_name', { ascending: true });
+	// Get all data in parallel
+	const [{ data: guests }, { data: events }, { data: guestEvents }, { data: contactInfo }] =
+		await Promise.all([
+			supabase
+				.from('guests')
+				.select(
+					'id, first_name, last_name, is_child, household_id, households(name), rsvps(id, event_id, attending, dietary_restrictions, submitted_at, updated_at)'
+				)
+				.order('last_name', { ascending: true }),
+			supabase.from('events').select('id, name').order('sort_order', { ascending: true }),
+			supabase.from('guest_events').select('guest_id, event_id'),
+			supabase.from('household_contact_info').select('*')
+		]);
 
-	// Fetch ceremony interest
-	const { data: ceremonyInterest } = await supabase
-		.from('ceremony_interest')
-		.select('*');
-
-	const ceremonyByGuestId = new Map(
-		(ceremonyInterest ?? []).map((c: { guest_id: string }) => [c.guest_id, c])
+	const eventList = events ?? [];
+	const guestEventSet = new Set(
+		(guestEvents ?? []).map((ge) => `${ge.guest_id}:${ge.event_id}`)
 	);
-
-	// Fetch household contact info
-	const { data: contactInfo } = await supabase
-		.from('household_contact_info')
-		.select('*');
 
 	const contactByHouseholdId = new Map(
 		(contactInfo ?? []).map((c: { household_id: string }) => [c.household_id, c])
 	);
 
-	// Build flat RSVP rows for the table
+	// Build flat RSVP rows
 	type RsvpRow = {
-		rsvpId: string | null;
 		guestId: string;
 		guestName: string;
 		householdName: string;
-		attending: boolean | null;
-		ceremonyInterest: string | null;
-		ceremonyOtherText: string | null;
+		eventAttendance: Record<string, boolean | null>; // keyed by event_id
+		eventInvited: Record<string, boolean>; // keyed by event_id
 		dietaryRestrictions: { selections: string[]; other: string } | null;
-		songRequest: string;
 		email: string | null;
 		phone: string | null;
 		address: string | null;
 		submittedAt: string | null;
-		updatedAt: string | null;
 	};
 
 	let rows: RsvpRow[] = [];
 
 	for (const guest of guests ?? []) {
-		const rsvp = guest.rsvps?.[0]; // One RSVP per guest now
 		const household = guest.households as unknown as { name: string } | null;
-		const ceremony = ceremonyByGuestId.get(guest.id) as {
-			interest_level?: string;
-			other_text?: string;
-		} | undefined;
 		const contact = contactByHouseholdId.get(guest.household_id) as {
 			email?: string;
 			phone?: string;
@@ -81,21 +68,38 @@ export const load: PageServerLoad = async ({ url }) => {
 			contact?.address_postal_code
 		].filter(Boolean);
 
+		const eventAttendance: Record<string, boolean | null> = {};
+		const eventInvited: Record<string, boolean> = {};
+		let dietary: { selections: string[]; other: string } | null = null;
+		let latestSubmission: string | null = null;
+
+		for (const event of eventList) {
+			eventInvited[event.id] = guestEventSet.has(`${guest.id}:${event.id}`);
+			const rsvp = guest.rsvps?.find(
+				(r: { event_id: string }) => r.event_id === event.id
+			);
+			eventAttendance[event.id] = rsvp?.attending ?? null;
+
+			// Get dietary from reception RSVP (or any rsvp that has it)
+			if (rsvp?.dietary_restrictions?.selections?.length || rsvp?.dietary_restrictions?.other) {
+				dietary = rsvp.dietary_restrictions;
+			}
+			if (rsvp?.submitted_at && (!latestSubmission || rsvp.submitted_at > latestSubmission)) {
+				latestSubmission = rsvp.submitted_at;
+			}
+		}
+
 		rows.push({
-			rsvpId: rsvp?.id ?? null,
 			guestId: guest.id,
 			guestName: `${guest.first_name} ${guest.last_name}`,
 			householdName: household?.name ?? '',
-			attending: rsvp?.attending ?? null,
-			ceremonyInterest: ceremony?.interest_level ?? null,
-			ceremonyOtherText: ceremony?.other_text ?? null,
-			dietaryRestrictions: rsvp?.dietary_restrictions ?? null,
-			songRequest: rsvp?.song_request ?? '',
+			eventAttendance,
+			eventInvited,
+			dietaryRestrictions: dietary,
 			email: contact?.email ?? null,
 			phone: contact?.phone ?? null,
 			address: addressParts.length > 0 ? addressParts.join(', ') : null,
-			submittedAt: rsvp?.submitted_at ?? null,
-			updatedAt: rsvp?.updated_at ?? null
+			submittedAt: latestSubmission
 		});
 	}
 
@@ -105,22 +109,17 @@ export const load: PageServerLoad = async ({ url }) => {
 		rows = rows.filter((r) => r.guestName.toLowerCase().includes(s));
 	}
 	if (statusFilter === 'attending') {
-		rows = rows.filter((r) => r.attending === true);
+		rows = rows.filter((r) => Object.values(r.eventAttendance).some((a) => a === true));
 	} else if (statusFilter === 'declined') {
-		rows = rows.filter((r) => r.attending === false);
+		rows = rows.filter((r) => Object.values(r.eventAttendance).some((a) => a === false));
 	} else if (statusFilter === 'pending') {
-		rows = rows.filter((r) => r.attending === null);
+		rows = rows.filter((r) => Object.values(r.eventAttendance).every((a) => a === null));
 	}
 	if (dietaryFilter) {
-		rows = rows.filter((r) =>
-			r.dietaryRestrictions?.selections?.includes(dietaryFilter)
-		);
-	}
-	if (ceremonyFilter) {
-		rows = rows.filter((r) => r.ceremonyInterest === ceremonyFilter);
+		rows = rows.filter((r) => r.dietaryRestrictions?.selections?.includes(dietaryFilter));
 	}
 
-	return { rows, search, statusFilter, dietaryFilter, ceremonyFilter };
+	return { rows, events: eventList, search, statusFilter, dietaryFilter };
 };
 
 export const actions: Actions = {
@@ -129,33 +128,45 @@ export const actions: Actions = {
 		const formData = await request.formData();
 
 		const guest_id = formData.get('guest_id') as string;
-		const attending = formData.get('attending') as string;
-		const song_request = (formData.get('song_request') as string) ?? '';
-
-		// Parse dietary
-		const dietarySelections = formData.getAll('dietary_selections') as string[];
-		const dietaryOther = (formData.get('dietary_other') as string) ?? '';
-
 		if (!guest_id) {
 			return fail(400, { error: 'Guest is required.' });
 		}
 
-		const attendingValue = attending === 'yes' ? true : attending === 'no' ? false : null;
+		// Parse dietary
+		const dietarySelections = formData.getAll('dietary_selections') as string[];
+		const dietaryOther = (formData.get('dietary_other') as string) ?? '';
+		const dietary = { selections: dietarySelections, other: dietaryOther };
 
-		const { error } = await supabase.from('rsvps').upsert(
-			{
-				guest_id,
-				attending: attendingValue,
-				dietary_restrictions: { selections: dietarySelections, other: dietaryOther },
-				song_request,
-				submitted_at: new Date().toISOString(),
-				updated_at: new Date().toISOString()
-			},
-			{ onConflict: 'guest_id' }
-		);
+		// Parse per-event attendance
+		for (const [key, value] of formData.entries()) {
+			const match = key.match(/^events\[(.+?)\]\.attending$/);
+			if (match) {
+				const eventId = match[1];
+				const attending = value === 'yes' ? true : value === 'no' ? false : null;
 
-		if (error) {
-			return fail(500, { error: 'Failed to update RSVP.' });
+				// Find reception event for dietary assignment
+				const receptionEventId = formData.get('reception_event_id') as string;
+				const rsvpDietary =
+					eventId === receptionEventId && attending
+						? dietary
+						: { selections: [] as string[], other: '' };
+
+				const { error } = await supabase.from('rsvps').upsert(
+					{
+						guest_id,
+						event_id: eventId,
+						attending,
+						dietary_restrictions: rsvpDietary,
+						submitted_at: new Date().toISOString(),
+						updated_at: new Date().toISOString()
+					},
+					{ onConflict: 'guest_id,event_id' }
+				);
+
+				if (error) {
+					return fail(500, { error: 'Failed to update RSVP.' });
+				}
+			}
 		}
 
 		return { success: true };

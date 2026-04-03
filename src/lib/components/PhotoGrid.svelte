@@ -97,13 +97,14 @@
 {#if photos.length === 0 && !loading}
 	<p class="py-8 text-center text-brown-light">No photos yet.</p>
 {:else}
-	<div class="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+	<div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4">
 		{#each columns as column}
 			<div class="flex flex-col gap-3">
 				{#each column as { photo, index }}
 					<button
-						class="block w-full overflow-hidden rounded-lg shadow-sm transition-transform hover:scale-[1.02]"
+						class="block w-full overflow-hidden rounded-xl shadow-sm transition-transform hover:scale-[1.02]"
 						onclick={() => openLightbox(index)}
+						aria-label="Open photo {index + 1}"
 					>
 						<img src={photo.url} alt={photo.name} class="w-full object-cover" loading="lazy" />
 					</button>
@@ -126,18 +127,18 @@
 <!-- Lightbox -->
 {#if selectedPhoto}
 	<div
-		class="fixed inset-0 z-50 flex items-center justify-center bg-brown/80 p-4"
+		class="fixed inset-0 z-50 flex items-center justify-center bg-brown/85 p-2 sm:p-4"
 		role="dialog"
 		aria-modal="true"
 	>
 		<!-- Backdrop close -->
 		<button class="absolute inset-0" onclick={closeLightbox} aria-label="Close lightbox"></button>
 
-		<div class="relative">
+		<div class="relative flex w-full max-w-6xl items-center justify-center px-10 sm:px-16">
 			<img
 				src={selectedPhoto.fullUrl ?? selectedPhoto.url}
 				alt=""
-				class="max-h-[90vh] max-w-[90vw] rounded-lg transition-opacity duration-300 {imageLoading
+				class="max-h-[88vh] w-auto max-w-full rounded-xl transition-opacity duration-300 sm:max-h-[90vh] {imageLoading
 					? 'opacity-0'
 					: 'opacity-100'}"
 				onload={() => (imageLoading = false)}
@@ -155,7 +156,7 @@
 			<a
 				href={selectedPhoto.originalUrl ?? selectedPhoto.fullUrl ?? selectedPhoto.url}
 				download
-				class="absolute -bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-medium text-brown shadow-md transition-colors hover:bg-burgundy hover:text-white"
+				class="touch-target absolute top-2 left-2 flex items-center gap-1.5 rounded-full bg-white px-3 py-2 text-sm font-medium text-brown shadow-md transition-colors hover:bg-burgundy hover:text-white sm:top-4 sm:left-4 sm:px-4"
 				aria-label="Download photo"
 			>
 				<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +172,7 @@
 
 			<!-- Close button -->
 			<button
-				class="absolute -top-3 -right-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-brown shadow-md hover:bg-burgundy-light"
+				class="touch-target absolute top-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-white text-brown shadow-md hover:bg-burgundy-light sm:top-4 sm:right-4"
 				onclick={closeLightbox}
 				aria-label="Close"
 			>
@@ -182,7 +183,7 @@
 		<!-- Prev button -->
 		{#if selectedIndex !== null && selectedIndex > 0}
 			<button
-				class="absolute top-1/2 left-4 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-brown shadow-md transition-colors hover:bg-white"
+				class="touch-target absolute bottom-4 left-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-brown shadow-md transition-colors hover:bg-white sm:top-1/2 sm:bottom-auto sm:left-4 sm:h-12 sm:w-12 sm:-translate-y-1/2"
 				onclick={prev}
 				aria-label="Previous photo"
 			>
@@ -200,7 +201,7 @@
 		<!-- Next button -->
 		{#if selectedIndex !== null && selectedIndex < photos.length - 1}
 			<button
-				class="absolute top-1/2 right-4 z-10 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-brown shadow-md transition-colors hover:bg-white"
+				class="touch-target absolute right-3 bottom-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-brown shadow-md transition-colors hover:bg-white sm:top-1/2 sm:right-4 sm:bottom-auto sm:h-12 sm:w-12 sm:-translate-y-1/2"
 				onclick={next}
 				aria-label="Next photo"
 			>

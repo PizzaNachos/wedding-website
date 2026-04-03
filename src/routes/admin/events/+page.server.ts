@@ -7,8 +7,8 @@ export const load: PageServerLoad = async () => {
 
 	const { data: events } = await supabase
 		.from('events')
-		.select('*')
-		.order('date', { ascending: true });
+		.select('*, guest_events(count)')
+		.order('sort_order', { ascending: true });
 
 	return { events: events ?? [] };
 };
@@ -28,7 +28,11 @@ export const actions: Actions = {
 			return fail(400, { error: 'Name, date, and time are required.' });
 		}
 
-		const { error } = await supabase.from('events').insert({ name, date, time, location, description });
+		const image_path = (formData.get('image_path') as string) || null;
+		const address = (formData.get('address') as string) || null;
+		const sort_order = parseInt(formData.get('sort_order') as string) || 0;
+
+		const { error } = await supabase.from('events').insert({ name, date, time, location, description, image_path, address, sort_order });
 
 		if (error) {
 			return fail(500, { error: 'Failed to create event.' });
@@ -52,9 +56,13 @@ export const actions: Actions = {
 			return fail(400, { error: 'Name, date, and time are required.' });
 		}
 
+		const image_path = (formData.get('image_path') as string) || null;
+		const address = (formData.get('address') as string) || null;
+		const sort_order = parseInt(formData.get('sort_order') as string) || 0;
+
 		const { error } = await supabase
 			.from('events')
-			.update({ name, date, time, location, description })
+			.update({ name, date, time, location, description, image_path, address, sort_order })
 			.eq('id', id);
 
 		if (error) {

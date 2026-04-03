@@ -12,11 +12,11 @@
 
 <div class="rounded-lg border border-burgundy-light bg-white shadow-sm">
 	<button
-		class="flex w-full cursor-pointer items-center justify-between px-6 py-4 text-left"
+		class="touch-target flex w-full cursor-pointer items-start justify-between gap-4 px-4 py-4 text-left sm:px-6"
 		onclick={() => (isOpen = !isOpen)}
 		aria-expanded={isOpen}
 	>
-		<span class="font-serif text-lg text-brown">{title}</span>
+		<span class="font-serif text-base leading-relaxed text-brown sm:text-lg">{title}</span>
 		<svg
 			class="h-5 w-5 shrink-0 text-burgundy transition-transform duration-200 {isOpen
 				? 'rotate-180'
@@ -35,7 +35,7 @@
 			: 'grid-rows-[0fr] opacity-0'}"
 	>
 		<div class="overflow-hidden">
-			<div class="px-6 pb-4 text-brown-light">
+			<div class="px-4 pb-4 text-brown-light sm:px-6">
 				{@render children()}
 			</div>
 		</div>

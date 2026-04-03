@@ -9,11 +9,11 @@
 	<title>{i18n.t.faqs.title} — {COUPLE.partner1} & {COUPLE.partner2}</title>
 </svelte:head>
 
-<section class="mx-auto max-w-3xl px-4 py-16">
+<section class="page-shell page-shell--md page-section">
 	<div class="mb-10 text-center">
-		<h1 class="font-script text-4xl text-brown sm:text-5xl">{i18n.t.faqs.title}</h1>
-		<div class="mx-auto mt-4 h-px w-16 bg-gold"></div>
-		<p class="mt-4 text-brown-light">
+		<h1 class="page-title font-script text-brown">{i18n.t.faqs.title}</h1>
+		<div class="section-rule"></div>
+		<p class="mt-4 leading-relaxed text-brown-light">
 			{i18n.t.faqs.subtitle}
 		</p>
 	</div>

@@ -83,6 +83,25 @@
 			</div>
 		</div>
 
+		<!-- Event Invitations -->
+		<div class="rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
+			<h2 class="mb-4 text-lg font-medium text-gray-900">Event Invitations</h2>
+			<div class="space-y-2">
+				{#each data.events as event}
+					<label class="flex items-center gap-2">
+						<input
+							type="checkbox"
+							name="event_ids"
+							value={event.id}
+							checked={event.name === 'Reception'}
+							class="rounded border-gray-300"
+						/>
+						<span class="text-sm text-gray-700">{event.name}</span>
+					</label>
+				{/each}
+			</div>
+		</div>
+
 		<div class="flex justify-end">
 			<button
 				type="submit"

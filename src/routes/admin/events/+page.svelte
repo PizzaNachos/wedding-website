@@ -60,6 +60,18 @@
 					<span class="mb-1 block text-sm font-medium text-gray-700">Description</span>
 					<textarea name="description" rows="2" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"></textarea>
 				</label>
+				<label class="block">
+					<span class="mb-1 block text-sm font-medium text-gray-700">Address</span>
+					<input type="text" name="address" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+				</label>
+				<label class="block">
+					<span class="mb-1 block text-sm font-medium text-gray-700">Image Path</span>
+					<input type="text" name="image_path" placeholder="/images/rsvp/photo.jpg" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+				</label>
+				<label class="block">
+					<span class="mb-1 block text-sm font-medium text-gray-700">Sort Order</span>
+					<input type="number" name="sort_order" value="0" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
+				</label>
 			</div>
 			<div class="mt-4 flex justify-end">
 				<button type="submit" class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
@@ -78,6 +90,7 @@
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Date</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Time</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Location</th>
+					<th class="px-4 py-3 text-right font-medium text-gray-500">Invited</th>
 					<th class="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
 				</tr>
 			</thead>
@@ -85,7 +98,7 @@
 				{#each data.events as event}
 					{#if editingId === event.id}
 						<tr class="border-b border-gray-50">
-							<td colspan="5" class="p-4">
+							<td colspan="6" class="p-4">
 								<form
 									method="POST"
 									action="?/update"
@@ -104,6 +117,11 @@
 										<input type="text" name="location" value={event.location ?? ''} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Location" />
 									</div>
 									<textarea name="description" rows="2" class="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Description">{event.description ?? ''}</textarea>
+									<div class="mt-3 grid gap-3 sm:grid-cols-3">
+										<input type="text" name="address" value={event.address ?? ''} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Address" />
+										<input type="text" name="image_path" value={event.image_path ?? ''} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Image path" />
+										<input type="number" name="sort_order" value={event.sort_order ?? 0} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Sort order" />
+									</div>
 									<div class="mt-3 flex gap-2">
 										<button type="submit" class="rounded-lg bg-gray-900 px-3 py-1.5 text-sm text-white hover:bg-gray-800">Save</button>
 										<button type="button" onclick={() => (editingId = null)} class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50">Cancel</button>
@@ -117,6 +135,7 @@
 							<td class="px-4 py-3 text-gray-600">{event.date}</td>
 							<td class="px-4 py-3 text-gray-600">{event.time?.slice(0, 5)}</td>
 							<td class="px-4 py-3 text-gray-600">{event.location ?? '—'}</td>
+							<td class="px-4 py-3 text-right text-gray-600">{event.guest_events?.[0]?.count ?? 0}</td>
 							<td class="px-4 py-3 text-right">
 								<button onclick={() => (editingId = event.id)} class="mr-2 text-sm text-blue-600 hover:text-blue-800">Edit</button>
 								<form method="POST" action="?/delete" use:enhance class="inline">
@@ -133,7 +152,7 @@
 				{/each}
 				{#if data.events.length === 0}
 					<tr>
-						<td colspan="5" class="px-4 py-8 text-center text-gray-400">No events yet.</td>
+						<td colspan="6" class="px-4 py-8 text-center text-gray-400">No events yet.</td>
 					</tr>
 				{/if}
 			</tbody>

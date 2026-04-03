@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	// Get all guests with household and RSVPs
 	let query = supabase
 		.from('guests')
-		.select('*, households(id, name), rsvps(attending, dietary_restrictions, song_request)')
+		.select('*, households(id, name), rsvps(event_id, attending, dietary_restrictions)')
 		.order('last_name', { ascending: true });
 
 	if (search) {
@@ -57,17 +57,21 @@ export const load: PageServerLoad = async ({ url }) => {
 		emailByHouseholdId[c.household_id] = c.email;
 	}
 
-	// Fetch ceremony interest
-	const { data: ceremonyInterest } = await supabase
-		.from('ceremony_interest')
-		.select('*');
+	// Fetch guest_events with event names
+	const { data: guestEventsList } = await supabase
+		.from('guest_events')
+		.select('guest_id, events(name)');
 
-	const ceremonyByGuestId: Record<string, { interest_level: string; other_text: string | null }> = {};
-	for (const c of ceremonyInterest ?? []) {
-		ceremonyByGuestId[c.guest_id] = c;
+	const eventsByGuestId: Record<string, string[]> = {};
+	for (const ge of guestEventsList ?? []) {
+		const eventName = (ge.events as unknown as { name: string })?.name;
+		if (eventName) {
+			if (!eventsByGuestId[ge.guest_id]) eventsByGuestId[ge.guest_id] = [];
+			eventsByGuestId[ge.guest_id].push(eventName);
+		}
 	}
 
-	return { guests: filteredGuests, emailByHouseholdId, ceremonyByGuestId, search, statusFilter, dietaryFilter };
+	return { guests: filteredGuests, emailByHouseholdId, eventsByGuestId, search, statusFilter, dietaryFilter };
 };
 
 export const actions: Actions = {
@@ -78,8 +82,7 @@ export const actions: Actions = {
 
 		if (!id) return fail(400, { error: 'Guest ID is required.' });
 
-		await supabase.from('rsvps').delete().eq('guest_id', id);
-		await supabase.from('ceremony_interest').delete().eq('guest_id', id);
+		// guest_events and rsvps cascade-delete via FK
 		const { error } = await supabase.from('guests').delete().eq('id', id);
 
 		if (error) {

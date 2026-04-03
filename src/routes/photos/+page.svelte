@@ -28,16 +28,16 @@
 	<title>{i18n.t.photos.title} — {COUPLE.partner1} & {COUPLE.partner2}</title>
 </svelte:head>
 
-<section class="mx-auto max-w-5xl px-4 py-16">
+<section class="page-shell page-shell--xl page-section">
 	<div class="mb-10 text-center">
-		<h1 class="font-script text-4xl text-brown sm:text-5xl">{i18n.t.photos.title}</h1>
-		<div class="mx-auto mt-4 h-px w-16 bg-gold"></div>
+		<h1 class="page-title font-script text-brown">{i18n.t.photos.title}</h1>
+		<div class="section-rule"></div>
 	</div>
 
 	<!-- View toggle: Gallery / Upload -->
-	<div class="mb-8 flex justify-center gap-2">
+	<div class="mx-auto mb-8 grid max-w-md grid-cols-1 gap-2 min-[380px]:grid-cols-2">
 		<button
-			class="rounded-full px-6 py-2 text-sm font-semibold tracking-widest uppercase transition-colors {view ===
+			class="touch-target rounded-full px-5 py-3 text-sm font-semibold tracking-[0.22em] uppercase transition-colors {view ===
 			'gallery'
 				? 'bg-burgundy text-white'
 				: 'border-2 border-burgundy-light text-brown-light hover:border-burgundy hover:text-burgundy'}"
@@ -46,7 +46,7 @@
 			{i18n.t.photos.gallery}
 		</button>
 		<button
-			class="rounded-full px-6 py-2 text-sm font-semibold tracking-widest uppercase transition-colors {view ===
+			class="touch-target rounded-full px-5 py-3 text-sm font-semibold tracking-[0.22em] uppercase transition-colors {view ===
 			'upload'
 				? 'bg-burgundy text-white'
 				: 'border-2 border-burgundy-light text-brown-light hover:border-burgundy hover:text-burgundy'}"
@@ -61,7 +61,8 @@
 		<div class="mb-8 flex flex-wrap justify-center gap-2">
 			{#each tabIds as tabId}
 				<button
-					class="rounded-full px-4 py-1.5 text-sm transition-colors {gallery.activeTab === tabId
+					class="touch-target rounded-full px-4 py-2 text-sm transition-colors {gallery.activeTab ===
+					tabId
 						? 'bg-burgundy text-white'
 						: 'border border-burgundy-light text-brown-light hover:border-burgundy hover:text-burgundy'}"
 					onclick={() => gallery.switchTab(tabId)}
@@ -83,7 +84,13 @@
 		<!-- Upload view -->
 		<div class="mx-auto max-w-2xl">
 			<h2 class="mb-6 text-center font-serif text-2xl text-brown">{i18n.t.photos.shareTitle}</h2>
-			<PhotoUpload onUploadComplete={() => { invalidateAll(); view = 'gallery'; gallery.switchTab('guest'); }} />
+			<PhotoUpload
+				onUploadComplete={() => {
+					invalidateAll();
+					view = 'gallery';
+					gallery.switchTab('guest');
+				}}
+			/>
 		</div>
 	{/if}
 </section>

@@ -18,10 +18,10 @@
 	<title>{i18n.t.rsvp.title} — {COUPLE.partner1} & {COUPLE.partner2}</title>
 </svelte:head>
 
-<section class="mx-auto max-w-xl px-4 py-24 text-center">
-	<h1 class="font-script text-4xl text-brown sm:text-5xl">{i18n.t.rsvp.title}</h1>
-	<div class="mx-auto mt-4 h-px w-16 bg-gold"></div>
-	<p class="mt-8 text-brown-light">
+<section class="page-shell page-shell--sm px-4 py-16 text-center sm:py-24">
+	<h1 class="page-title font-script text-brown">{i18n.t.rsvp.title}</h1>
+	<div class="section-rule"></div>
+	<p class="mt-8 leading-relaxed text-brown-light">
 		{i18n.t.rsvp.instructions}
 	</p>
 
@@ -32,11 +32,11 @@
 			bind:value={nameValue}
 			placeholder={i18n.t.rsvp.placeholder}
 			required
-			class="w-full rounded-md border border-burgundy-light bg-ivory/50 px-4 py-3 text-center text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:outline-none focus:ring-1 focus:ring-burgundy"
+			class="touch-target w-full rounded-md border border-burgundy-light bg-ivory/50 px-4 py-3 text-center text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-1 focus:ring-burgundy focus:outline-none"
 		/>
 		<button
 			type="submit"
-			class="inline-block rounded-full border-2 border-burgundy bg-burgundy px-10 py-3 text-sm font-semibold uppercase tracking-widest text-white transition-colors hover:bg-burgundy-dark hover:border-burgundy-dark focus:outline-none focus:ring-2 focus:ring-burgundy focus:ring-offset-2"
+			class="touch-target inline-flex w-full items-center justify-center rounded-full border-2 border-burgundy bg-burgundy px-10 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-colors hover:border-burgundy-dark hover:bg-burgundy-dark focus:ring-2 focus:ring-burgundy focus:ring-offset-2 focus:outline-none sm:w-auto"
 		>
 			{i18n.t.rsvp.button}
 		</button>

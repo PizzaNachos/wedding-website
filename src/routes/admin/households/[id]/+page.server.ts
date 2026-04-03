@@ -17,27 +17,38 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const guestIds = household.guests.map((g: { id: string }) => g.id);
 
-	const { data: rsvps } = await supabase
-		.from('rsvps')
-		.select('guest_id, attending, dietary_restrictions')
-		.in('guest_id', guestIds);
+	const [{ data: rsvps }, { data: guestEvents }, { data: events }] = await Promise.all([
+		supabase
+			.from('rsvps')
+			.select('guest_id, event_id, attending, dietary_restrictions')
+			.in('guest_id', guestIds),
+		supabase
+			.from('guest_events')
+			.select('guest_id, event_id, events(name)')
+			.in('guest_id', guestIds),
+		supabase.from('events').select('id, name').order('sort_order', { ascending: true })
+	]);
 
+	// Build per-guest event names for display
+	const eventsByGuestId: Record<string, string[]> = {};
+	for (const ge of guestEvents ?? []) {
+		const eventName = (ge.events as unknown as { name: string })?.name;
+		if (eventName) {
+			if (!eventsByGuestId[ge.guest_id]) eventsByGuestId[ge.guest_id] = [];
+			eventsByGuestId[ge.guest_id].push(eventName);
+		}
+	}
+
+	// Build per-guest RSVP data (first rsvp with attending info for status pill)
 	const rsvpByGuestId: Record<string, { attending: boolean | null; dietary_restrictions: { selections?: string[]; other?: string } | null }> = {};
 	for (const r of rsvps ?? []) {
-		rsvpByGuestId[r.guest_id] = r;
+		// Use the first attending response found, or keep updating
+		if (!rsvpByGuestId[r.guest_id] || r.attending !== null) {
+			rsvpByGuestId[r.guest_id] = r;
+		}
 	}
 
-	const { data: ceremonyInterest } = await supabase
-		.from('ceremony_interest')
-		.select('guest_id, interest_level, other_text')
-		.in('guest_id', guestIds);
-
-	const ceremonyByGuestId: Record<string, { interest_level: string; other_text: string | null }> = {};
-	for (const c of ceremonyInterest ?? []) {
-		ceremonyByGuestId[c.guest_id] = c;
-	}
-
-	return { household, rsvpByGuestId, ceremonyByGuestId };
+	return { household, rsvpByGuestId, eventsByGuestId, events: events ?? [] };
 };
 
 export const actions: Actions = {
@@ -79,12 +90,22 @@ export const actions: Actions = {
 			return fail(400, { error: 'First and last name are required.' });
 		}
 
-		const { error: err } = await supabase
+		const { data: newGuest, error: err } = await supabase
 			.from('guests')
-			.insert({ first_name, last_name, is_child, household_id: params.id });
+			.insert({ first_name, last_name, is_child, household_id: params.id })
+			.select('id')
+			.single();
 
-		if (err) {
+		if (err || !newGuest) {
 			return fail(500, { error: 'Failed to add guest.' });
+		}
+
+		// Assign events
+		const eventIds = formData.getAll('event_ids') as string[];
+		if (eventIds.length > 0) {
+			await supabase.from('guest_events').insert(
+				eventIds.map((eventId) => ({ guest_id: newGuest.id, event_id: eventId }))
+			);
 		}
 
 		return { success: true };
@@ -97,8 +118,7 @@ export const actions: Actions = {
 
 		if (!guestId) return fail(400, { error: 'Guest ID is required.' });
 
-		await supabase.from('rsvps').delete().eq('guest_id', guestId);
-		await supabase.from('ceremony_interest').delete().eq('guest_id', guestId);
+		// guest_events and rsvps cascade-delete via FK
 		const { error: err } = await supabase.from('guests').delete().eq('id', guestId);
 
 		if (err) {

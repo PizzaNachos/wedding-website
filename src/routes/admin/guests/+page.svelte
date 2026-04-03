@@ -51,27 +51,6 @@
 		return 'bg-yellow-100 text-yellow-700';
 	}
 
-	function getCeremonyPill(guestId: string): {
-		label: string;
-		color: string;
-		otherText: string | null;
-	} {
-		const c = data.ceremonyByGuestId[guestId];
-		if (!c) return { label: '—', color: 'bg-gray-100 text-gray-500', otherText: null };
-		switch (c.interest_level) {
-			case 'yes':
-				return { label: 'Yes', color: 'bg-green-100 text-green-700', otherText: null };
-			case 'maybe':
-				return { label: 'Maybe', color: 'bg-yellow-100 text-yellow-700', otherText: null };
-			case 'not_likely':
-				return { label: 'Not Likely', color: 'bg-red-100 text-red-700', otherText: null };
-			case 'other':
-				return { label: 'Other', color: 'bg-gray-100 text-gray-600', otherText: c.other_text };
-			default:
-				return { label: '—', color: 'bg-gray-100 text-gray-500', otherText: null };
-		}
-	}
-
 	function getDietary(guest: (typeof data.guests)[0]): string {
 		console.log('Giest diet,', guest);
 		const rsvp = guest.rsvps;
@@ -236,7 +215,7 @@
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Household</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Email</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-					<th class="px-4 py-3 text-left font-medium text-gray-500">Ceremony</th>
+					<th class="px-4 py-3 text-left font-medium text-gray-500">Events</th>
 					<th class="px-4 py-3 text-left font-medium text-gray-500">Dietary</th>
 					<th class="px-4 py-3 text-right font-medium text-gray-500">Actions</th>
 				</tr>
@@ -244,7 +223,7 @@
 			<tbody>
 				{#each data.guests as guest}
 					{@const status = getStatus(guest)}
-					{@const ceremony = getCeremonyPill(guest.id)}
+					{@const guestEventNames = data.eventsByGuestId[guest.id] ?? []}
 					{@const dietary = getDietary(guest)}
 					<tr class="border-b border-gray-50">
 						<td class="px-4 py-3">
@@ -279,11 +258,16 @@
 							</span>
 						</td>
 						<td class="px-4 py-3">
-							<span class="rounded-full px-2 py-0.5 text-xs font-medium {ceremony.color}">
-								{ceremony.label}
-							</span>
-							{#if ceremony.otherText}
-								<span class="ml-1 text-xs text-gray-500">{ceremony.otherText}</span>
+							{#if guestEventNames.length > 0}
+								<div class="flex flex-wrap gap-1">
+									{#each guestEventNames as eventName}
+										<span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+											{eventName}
+										</span>
+									{/each}
+								</div>
+							{:else}
+								<span class="text-xs text-gray-400">—</span>
 							{/if}
 						</td>
 						<td class="px-4 py-3 text-xs text-gray-600">

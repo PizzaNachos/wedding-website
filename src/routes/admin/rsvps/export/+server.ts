@@ -8,68 +8,49 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	const supabase = createServiceClient();
 
-	const { data: guests } = await supabase
-		.from('guests')
-		.select(
-			'id, first_name, last_name, is_child, household_id, households(name), rsvps(attending, dietary_restrictions, song_request, submitted_at, updated_at)'
-		)
-		.order('last_name', { ascending: true });
+	const [{ data: guests }, { data: events }, { data: guestEvents }, { data: contactInfo }] =
+		await Promise.all([
+			supabase
+				.from('guests')
+				.select(
+					'id, first_name, last_name, is_child, household_id, households(name), rsvps(event_id, attending, dietary_restrictions, submitted_at)'
+				)
+				.order('last_name', { ascending: true }),
+			supabase.from('events').select('id, name').order('sort_order', { ascending: true }),
+			supabase.from('guest_events').select('guest_id, event_id'),
+			supabase.from('household_contact_info').select('*')
+		]);
 
-	// Fetch ceremony interest
-	const { data: ceremonyInterest } = await supabase
-		.from('ceremony_interest')
-		.select('guest_id, interest_level, other_text');
-
-	const ceremonyByGuestId = new Map(
-		(ceremonyInterest ?? []).map((c: { guest_id: string }) => [c.guest_id, c])
+	const eventList = events ?? [];
+	const guestEventSet = new Set(
+		(guestEvents ?? []).map((ge) => `${ge.guest_id}:${ge.event_id}`)
 	);
-
-	// Fetch household contact info
-	const { data: contactInfo } = await supabase
-		.from('household_contact_info')
-		.select('*');
 
 	const contactByHouseholdId = new Map(
 		(contactInfo ?? []).map((c: { household_id: string }) => [c.household_id, c])
 	);
 
-	const csvRows: string[][] = [
-		[
-			'Guest Name',
-			'Household',
-			'Child',
-			'Attending',
-			'Ceremony Interest',
-			'Ceremony Other Text',
-			'Dietary Restrictions',
-			'Song Request',
-			'Email',
-			'Phone',
-			'Street',
-			'City',
-			'State/Province',
-			'Country',
-			'Postal Code',
-			'Submitted At',
-			'Updated At'
-		]
+	// Build CSV header
+	const header = [
+		'Guest Name',
+		'Household',
+		'Child',
+		...eventList.map((e) => e.name),
+		'Dietary Restrictions',
+		'Email',
+		'Phone',
+		'Street',
+		'City',
+		'State/Province',
+		'Country',
+		'Postal Code',
+		'Submitted At'
 	];
 
-	for (const guest of guests ?? []) {
-		const rsvp = guest.rsvps?.[0];
-		const dietary = rsvp?.dietary_restrictions as
-			| { selections?: string[]; other?: string }
-			| null;
-		const dietaryStr = [
-			...(dietary?.selections ?? []),
-			...(dietary?.other ? [`Other: ${dietary.other}`] : [])
-		].join('; ');
+	const csvRows: string[][] = [header];
 
+	for (const guest of guests ?? []) {
 		const household = guest.households as unknown as { name: string } | null;
-		const ceremony = ceremonyByGuestId.get(guest.id) as {
-			interest_level?: string;
-			other_text?: string;
-		} | undefined;
 		const contact = contactByHouseholdId.get(guest.household_id) as {
 			email?: string;
 			phone?: string;
@@ -80,15 +61,43 @@ export const GET: RequestHandler = async ({ locals }) => {
 			address_postal_code?: string;
 		} | undefined;
 
+		// Per-event attendance
+		const eventCols: string[] = [];
+		let dietary: { selections?: string[]; other?: string } | null = null;
+		let latestSubmission = '';
+
+		for (const event of eventList) {
+			const invited = guestEventSet.has(`${guest.id}:${event.id}`);
+			if (!invited) {
+				eventCols.push('Not Invited');
+				continue;
+			}
+			const rsvp = guest.rsvps?.find(
+				(r: { event_id: string }) => r.event_id === event.id
+			);
+			if (rsvp?.attending === true) eventCols.push('Yes');
+			else if (rsvp?.attending === false) eventCols.push('No');
+			else eventCols.push('Pending');
+
+			if (rsvp?.dietary_restrictions?.selections?.length || rsvp?.dietary_restrictions?.other) {
+				dietary = rsvp.dietary_restrictions;
+			}
+			if (rsvp?.submitted_at && rsvp.submitted_at > latestSubmission) {
+				latestSubmission = rsvp.submitted_at;
+			}
+		}
+
+		const dietaryStr = [
+			...(dietary?.selections ?? []),
+			...(dietary?.other ? [`Other: ${dietary.other}`] : [])
+		].join('; ');
+
 		csvRows.push([
 			`${guest.first_name} ${guest.last_name}`,
 			household?.name ?? '',
 			guest.is_child ? 'Yes' : 'No',
-			rsvp?.attending === true ? 'Yes' : rsvp?.attending === false ? 'No' : 'Pending',
-			ceremony?.interest_level ?? '',
-			ceremony?.other_text ?? '',
+			...eventCols,
 			dietaryStr,
-			rsvp?.song_request ?? '',
 			contact?.email ?? '',
 			contact?.phone ?? '',
 			contact?.address_street ?? '',
@@ -96,8 +105,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			contact?.address_state ?? '',
 			contact?.address_country ?? '',
 			contact?.address_postal_code ?? '',
-			rsvp?.submitted_at ?? '',
-			rsvp?.updated_at ?? ''
+			latestSubmission
 		]);
 	}
 

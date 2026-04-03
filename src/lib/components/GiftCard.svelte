@@ -17,7 +17,7 @@
 	{href}
 	target="_blank"
 	rel="noopener noreferrer"
-	class="block overflow-hidden rounded-lg border border-burgundy-light bg-white shadow-sm transition-transform hover:scale-[1.02]"
+	class="block overflow-hidden rounded-2xl border border-burgundy-light bg-white shadow-sm transition-transform hover:scale-[1.02]"
 >
 	<div class="flex aspect-square items-center justify-center overflow-hidden bg-ivory">
 		{#if image && !showFallback}
@@ -32,11 +32,11 @@
 			/>
 		{/if}
 		{#if !image || showFallback || !loaded}
-			<span class="text-5xl">{emoji}</span>
+			<span class="text-4xl sm:text-5xl">{emoji}</span>
 		{/if}
 	</div>
-	<div class="p-3 text-center">
-		<h3 class="font-serif text-sm text-brown">{name}</h3>
-		<p class="mt-0.5 text-xs font-semibold text-brown-light">${price}</p>
+	<div class="p-4 text-center">
+		<h3 class="font-serif text-base leading-snug text-brown">{name}</h3>
+		<p class="mt-1 text-sm font-semibold text-brown-light">${price}</p>
 	</div>
 </a>

@@ -44,22 +44,7 @@ export const actions: Actions = {
 
 		if (!id) return fail(400, { error: 'Household ID is required.' });
 
-		// Get guest IDs for this household
-		const { data: guests } = await supabase
-			.from('guests')
-			.select('id')
-			.eq('household_id', id);
-
-		const guestIds = (guests ?? []).map((g) => g.id);
-
-		if (guestIds.length > 0) {
-			await supabase.from('rsvps').delete().in('guest_id', guestIds);
-			await supabase.from('ceremony_interest').delete().in('guest_id', guestIds);
-			await supabase.from('guests').delete().eq('household_id', id);
-		}
-
-		await supabase.from('household_contact_info').delete().eq('household_id', id);
-
+		// Cascade deletes handle guests, guest_events, rsvps, and household_contact_info
 		const { error } = await supabase.from('households').delete().eq('id', id);
 
 		if (error) {

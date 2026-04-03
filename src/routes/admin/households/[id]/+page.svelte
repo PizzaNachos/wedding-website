@@ -10,18 +10,6 @@
 		return { label: 'Declined', color: 'bg-red-100 text-red-700' };
 	}
 
-	function getCeremonyPill(guestId: string): { label: string; color: string; otherText: string | null } {
-		const c = data.ceremonyByGuestId[guestId];
-		if (!c) return { label: '—', color: 'bg-gray-100 text-gray-500', otherText: null };
-		switch (c.interest_level) {
-			case 'yes': return { label: 'Yes', color: 'bg-green-100 text-green-700', otherText: null };
-			case 'maybe': return { label: 'Maybe', color: 'bg-yellow-100 text-yellow-700', otherText: null };
-			case 'not_likely': return { label: 'Not Likely', color: 'bg-red-100 text-red-700', otherText: null };
-			case 'other': return { label: 'Other', color: 'bg-gray-100 text-gray-600', otherText: c.other_text };
-			default: return { label: '—', color: 'bg-gray-100 text-gray-500', otherText: null };
-		}
-	}
-
 	function getDietary(guestId: string): string {
 		const r = data.rsvpByGuestId[guestId];
 		if (!r?.dietary_restrictions) return '';
@@ -78,7 +66,7 @@
 							<th class="px-3 py-2 text-left font-medium text-gray-500">Name</th>
 							<th class="px-3 py-2 text-left font-medium text-gray-500">Child</th>
 							<th class="px-3 py-2 text-left font-medium text-gray-500">Attending</th>
-							<th class="px-3 py-2 text-left font-medium text-gray-500">Ceremony</th>
+							<th class="px-3 py-2 text-left font-medium text-gray-500">Events</th>
 							<th class="px-3 py-2 text-left font-medium text-gray-500">Dietary</th>
 							<th class="px-3 py-2 text-right font-medium text-gray-500">Actions</th>
 						</tr>
@@ -86,7 +74,7 @@
 					<tbody>
 						{#each data.household.guests as guest}
 							{@const attending = getAttendingPill(guest.id)}
-							{@const ceremony = getCeremonyPill(guest.id)}
+							{@const guestEventNames = data.eventsByGuestId[guest.id] ?? []}
 							{@const dietary = getDietary(guest.id)}
 							<tr class="border-b border-gray-50">
 								<td class="px-3 py-2">
@@ -105,11 +93,16 @@
 									</span>
 								</td>
 								<td class="px-3 py-2">
-									<span class="rounded-full px-2 py-0.5 text-xs font-medium {ceremony.color}">
-										{ceremony.label}
-									</span>
-									{#if ceremony.otherText}
-										<span class="ml-1 text-xs text-gray-500">{ceremony.otherText}</span>
+									{#if guestEventNames.length > 0}
+										<div class="flex flex-wrap gap-1">
+											{#each guestEventNames as eventName}
+												<span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+													{eventName}
+												</span>
+											{/each}
+										</div>
+									{:else}
+										<span class="text-xs text-gray-400">—</span>
 									{/if}
 								</td>
 								<td class="px-3 py-2 text-xs text-gray-600">
@@ -150,6 +143,20 @@
 					<input type="checkbox" name="is_child" class="rounded border-gray-300" />
 					<span class="text-sm text-gray-700">Child</span>
 				</label>
+			</div>
+			<div class="mt-3 flex flex-wrap items-center gap-3">
+				{#each data.events as event}
+					<label class="flex items-center gap-1.5">
+						<input
+							type="checkbox"
+							name="event_ids"
+							value={event.id}
+							checked={event.name === 'Reception'}
+							class="rounded border-gray-300"
+						/>
+						<span class="text-sm text-gray-700">{event.name}</span>
+					</label>
+				{/each}
 				<button type="submit" class="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">
 					Add
 				</button>
