@@ -27,6 +27,8 @@ export const PROPOSAL_TRIP_IMAGES = [
 
 export const GIFT_IDEAS = [
 	{ name: 'Honeymoon Massage', price: 150, emoji: '💆', image: '/images/registry/massage.jpg' },
+	{ name: 'Trip to see Family', price: 300, emoji: '💆', image: '/images/registry/plane.jpg' },
+
 	{ name: 'Ceramic Pan Set', price: 200, emoji: '🍳', image: '/images/registry/pans.jpg' },
 	{ name: 'Knife Set', price: 300, emoji: '🔪', image: '/images/registry/knife.jpg' },
 	{ name: 'Date Night Dinner', price: 100, emoji: '🍽️', image: '/images/registry/date.webp' },
@@ -52,5 +54,7 @@ export const GIFT_IDEAS = [
 		emoji: '🧖',
 		image: '/images/registry/spa.jpg'
 	},
+	{ name: 'Colorado Toffee Gift Card', price: 40, emoji: '💆', image: '/images/registry/toffee.jpg' },
+
 	{ name: 'Cooking Class', price: 90, emoji: '👨‍🍳', image: '/images/registry/cooking.jpg' }
 ];
