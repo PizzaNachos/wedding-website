@@ -52,7 +52,7 @@ export const en = {
 				date: 'Spring\u2013Summer 2023',
 				title: 'Falling in Love',
 				description:
-					'A couple months in, Michael asked the question that made it all official — and she said yes.'
+					'A couple months in, Michael asked her to be his girlfriend — and she said yes.'
 			},
 			{
 				date: '2023-2025',
@@ -68,16 +68,16 @@ export const en = {
 					'Michael tried to propose multiple times, but every trip he planned turned into a group trip because Nayeli invited friends to join them. So he kept waiting for the right one-on-one moment. After three separate trips, it finally happened - and the answer was the easiest yes of all time.',
 				multiPhotos: [
 					{
-						title: 'Trip One',
-						caption: 'The proposal plan was ready. The surprise friend invite was also ready.'
+						title: 'Attempt #1',
+						caption: 'The ring was packed. Nayeli invited friends.'
 					},
 					{
-						title: 'Trip Two',
-						caption: 'Another beautiful trip, another postponed ring moment.'
+						title: 'Attempt #2',
+						caption: 'Another beautiful trip. Nayeli invited more friends.'
 					},
 					{
-						title: 'Trip Three',
-						caption: 'Finally just the two of them, finally the question, finally a yes.'
+						title: 'Attempt #3',
+						caption: 'At this point, it just had to happen.'
 					}
 				]
 			},

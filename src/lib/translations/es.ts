@@ -42,7 +42,7 @@ export const es: Translation = {
 				date: 'Primavera 2023',
 				title: 'Cómo Nos Conocimos',
 				description:
-					'Michael era tutor en el departamento de informática de la DU — y por lo visto, la noticia de que era bueno se había corrido. Nayeli se enteró por una amiga e hizo lo que cualquier estudiante de ciencias de la computación haría: buscó en el calendario de esa amiga hasta encontrar al misterioso tutor. Después de algunas semanas de sesiones perfectamente profesionales, Michael se armó de valor para preguntarle si quería salir a tomar palomas. El 3 de marzo, ella dijo que sí — y lo que empezó como ayuda con la tarea se convirtió silenciosamente en algo mucho mejor.'
+					'Michael era tutor en el departamento de informática de la DU — y por lo visto, la noticia de que era bueno se había corrido. Después de algunas semanas de sesiones perfectamente profesionales, Michael se armó de valor para preguntarle si quería salir a tomar palomas. El 3 de marzo, ella dijo que sí — y lo que empezó como ayuda con la tarea se convirtió silenciosamente en algo mucho mejor.'
 			},
 			{
 				date: 'Marzo 2023',
@@ -54,7 +54,7 @@ export const es: Translation = {
 				date: 'Primavera\u2013Verano 2023',
 				title: 'Enamorándose',
 				description:
-					'Un par de meses después, Michael hizo la pregunta que lo hizo todo oficial — y ella dijo que sí. Y si eso no fuera suficiente hito, un mes después Nayeli se encontró necesitando evitar escribir un ensayo, así que naturalmente terminamos en el refugio de animales. Michael no planeaba irse con un gato. Y sin embargo. Conozcan a Barry: una naranja adición a la familia que ha estado en este camino desde entonces.'
+					'Un par de meses después, Michael le pidió que fuera su novia — y ella dijo que sí. Y si eso no fuera suficiente hito, un mes después Nayeli se encontró necesitando evitar escribir un ensayo, así que naturalmente terminamos en el refugio de animales. Michael no planeaba irse con un gato. Y sin embargo. Conozcan a Barry: una naranja adición a la familia que ha estado en este camino desde entonces.'
 			},
 			{
 				date: '2023',
@@ -70,16 +70,16 @@ export const es: Translation = {
 					'Michael intento proponerle matrimonio varias veces, pero cada viaje que planeaba se convertia en viaje grupal porque Nayeli invitaba amigos. Asi que el siguio esperando el momento correcto para estar a solas. Despues de tres viajes separados, por fin paso - y la respuesta fue el si mas facil de todos los tiempos.',
 				multiPhotos: [
 					{
-						title: 'Viaje Uno',
-						caption: 'El plan de propuesta estaba listo. La invitacion sorpresa de amigos tambien.'
+						title: 'Intento #1',
+						caption: 'El anillo estaba en la maleta. Nayeli invito amigos.'
 					},
 					{
-						title: 'Viaje Dos',
-						caption: 'Otro viaje hermoso, otro momento del anillo pospuesto.'
+						title: 'Intento #2',
+						caption: 'Otro viaje hermoso. Nayeli invito mas amigos.'
 					},
 					{
-						title: 'Viaje Tres',
-						caption: 'Por fin estuvieron a solas, por fin llego la pregunta, por fin un si.'
+						title: 'Intento #3',
+						caption: 'En ese punto, simplemente tenia que pasar.'
 					}
 				]
 			},
