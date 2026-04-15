@@ -12,6 +12,15 @@
 	const hasExistingRsvp = $derived(data.existingRsvps.length > 0);
 
 	// Events visible to this household (any guest in household is invited)
+	function formatTime(time: string): string {
+		const [hourStr, minStr] = time.split(':');
+		let hour = parseInt(hourStr, 10);
+		const min = parseInt(minStr, 10);
+		const suffix = hour >= 12 ? 'pm' : 'am';
+		hour = hour % 12 || 12;
+		return min === 0 ? `${hour}${suffix}` : `${hour}:${minStr} ${suffix}`;
+	}
+
 	const householdEventIds = $derived(
 		new Set(data.guestEvents.map((ge: { event_id: string }) => ge.event_id))
 	);
@@ -85,7 +94,7 @@
 									<span
 										class="rounded-full border-2 bg-burgundy/20 px-3 py-1 text-sm font-semibold tracking-[0.18em] whitespace-nowrap text-burgundy-dark uppercase"
 									>
-										{event.time}
+										{formatTime(event.time)}
 									</span>
 								</div>
 							</div>
