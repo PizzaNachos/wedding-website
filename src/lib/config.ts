@@ -25,6 +25,15 @@ export const PROPOSAL_TRIP_IMAGES = [
 	'/images/our-story/trip3.jpeg'
 ];
 
+export const HERO_IMAGES: string[] = [
+	// Drop photos into static/images/hero/ then list them here:
+	"https://imagedelivery.net/9cMe9d4LFXgI4nPSeZlAjw/183564c1-5c72-486e-caee-c7f626223400/gamma=0",
+	'https://imagedelivery.net/9cMe9d4LFXgI4nPSeZlAjw/e6b6f876-6fe0-4dcf-ae6e-e8c97063ed00/gamma=0',
+	'https://imagedelivery.net/9cMe9d4LFXgI4nPSeZlAjw/fbea108f-838e-4682-634a-e806b18e4f00/gamma=0',
+	'https://imagedelivery.net/9cMe9d4LFXgI4nPSeZlAjw/6b880a42-5a48-4565-fe0c-80cb5cc1dc00/gamma=0',
+	// '/images/hero/photo2.jpg',
+];
+
 export const GIFT_IDEAS = [
 	{ name: 'Honeymoon Massage', price: 150, emoji: '💆', image: '/images/registry/massage.jpg' },
 	{ name: 'Trip to see Family', price: 300, emoji: '💆', image: '/images/registry/plane.jpg' },

@@ -8,6 +8,8 @@ npm run build
 cp -r ./build/ ../wedding-website-build/
 cd ../wedding-website-build/
 npm ci --omit dev
+cd ..
+tar -cvf site.tar wedding-website-build/
 scp -r -o "ProxyJump michael@mabrodis.ddns.net:5678" * michael@192.168.1.216:~/wedding_site
 
 # scp -r -o "ProxyJump michael@mabrodis.ddns.net:5678" ./build/* michael@192.168.1.216:~/wedding_site

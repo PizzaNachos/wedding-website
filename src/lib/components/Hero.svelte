@@ -1,17 +1,42 @@
 <script lang="ts">
-	import { COUPLE, WEDDING_DATE } from '$lib/config';
+	import { COUPLE, WEDDING_DATE, HERO_IMAGES } from '$lib/config';
 	import { i18n } from '$lib/i18n.svelte';
+	import { onMount } from 'svelte';
+
+	let currentIndex = $state(0);
+
+	onMount(() => {
+		if (HERO_IMAGES.length < 2) return;
+		const id = setInterval(() => {
+			currentIndex = (currentIndex + 1) % HERO_IMAGES.length;
+		}, 7000);
+		return () => clearInterval(id);
+	});
 </script>
 
 <section
-	class="relative flex min-h-[72svh] items-center justify-center bg-burgundy-light/30 px-4 py-10 sm:min-h-screen"
+	class="relative flex min-h-[72svh] items-center justify-center overflow-hidden bg-burgundy-light/30 px-4 py-10 sm:min-h-screen"
 >
+	<!-- Crossfade photos -->
+	{#if HERO_IMAGES.length > 0}
+		{#each HERO_IMAGES as src, i}
+			<img
+				{src}
+				alt=""
+				aria-hidden="true"
+				class="absolute inset-0 h-full w-full object-cover transition-opacity duration-2000 {i === currentIndex ? 'opacity-100' : 'opacity-0'}"
+			/>
+		{/each}
+		<!-- Ivory overlay for soft-wash effect -->
+		<div class="absolute inset-0 bg-ivory/60"></div>
+	{/if}
+
 	<!-- Decorative floral border -->
 	<div
-		class="compact-frame pointer-events-none absolute inset-0 border-double border-burgundy/10"
+		class="compact-frame pointer-events-none absolute inset-0 z-10 border-double border-burgundy/10"
 	></div>
 
-	<div class="page-shell page-shell--md relative text-center">
+	<div class="page-shell page-shell--md relative z-20 text-center">
 		<p
 			class="mb-4 text-[0.68rem] font-light tracking-[0.22em] text-brown-light uppercase sm:text-sm sm:tracking-[0.3em]"
 		>
