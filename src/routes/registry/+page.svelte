@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { COUPLE, VENMO_URL, GIFT_IDEAS } from '$lib/config';
+	import { COUPLE, VENMO_URL, CRATE_AND_BARREL_URL, GIFT_IDEAS } from '$lib/config';
 	import { i18n } from '$lib/i18n.svelte';
 	import GiftCard from '$lib/components/GiftCard.svelte';
 </script>
@@ -17,22 +17,43 @@
 		</p>
 	</div>
 
-	<!-- Venmo CTA -->
-	<div
-		class="mb-10 rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:mb-12 sm:p-8"
-	>
-		<p class="mb-2 font-serif text-2xl text-brown">{i18n.t.registry.venmoTitle}</p>
-		<p class="mb-6 text-sm text-brown-light">
-			{i18n.t.registry.venmoSubtitle}
-		</p>
-		<a
-			href={VENMO_URL}
-			target="_blank"
-			rel="noopener noreferrer"
-			class="touch-target inline-flex w-full items-center justify-center rounded-full bg-[#008CFF] px-8 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-opacity hover:opacity-90 sm:w-auto"
-		>
-			{i18n.t.registry.venmoButton}
-		</a>
+	<!-- Two-column registry cards -->
+	<div class="mb-10 grid grid-cols-1 gap-6 sm:mb-12 md:grid-cols-2">
+		<!-- Crate & Barrel Registry -->
+		<div class="flex flex-col rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:p-8">
+			<p class="mb-2 font-serif text-2xl text-brown">{i18n.t.registry.registryTitle}</p>
+			<p class="mb-6 text-sm text-brown-light">
+				{i18n.t.registry.registrySubtitle}
+			</p>
+			<div class="mt-auto">
+				<a
+					href={CRATE_AND_BARREL_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="touch-target inline-flex w-full items-center justify-center rounded-full bg-brown px-8 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-opacity hover:opacity-90 sm:w-auto"
+				>
+					{i18n.t.registry.registryButton}
+				</a>
+			</div>
+		</div>
+
+		<!-- Cash / Venmo Registry -->
+		<div class="flex flex-col rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:p-8">
+			<p class="mb-2 font-serif text-2xl text-brown">{i18n.t.registry.cashTitle}</p>
+			<p class="mb-6 text-sm text-brown-light">
+				{i18n.t.registry.cashSubtitle}
+			</p>
+			<div class="mt-auto">
+				<a
+					href={VENMO_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="touch-target inline-flex w-full items-center justify-center rounded-full bg-[#008CFF] px-8 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-opacity hover:opacity-90 sm:w-auto"
+				>
+					{i18n.t.registry.cashButton}
+				</a>
+			</div>
+		</div>
 	</div>
 
 	<!-- Gift ideas grid -->

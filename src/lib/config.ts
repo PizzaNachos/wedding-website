@@ -7,6 +7,9 @@ export const COUPLE = {
 
 export const VENMO_URL = 'https://venmo.com/MichaelNayeliWedding';
 
+export const CRATE_AND_BARREL_URL =
+	'https://www.crateandbarrel.com/gift-registry/nayeli-aguirre-and-michael-brodis/r7541961';
+
 export const WILD_BASIN_LODGING_URL =
 	'https://wildbasinlodge.my.canva.site/allenspark-lodging-recommendations/5-miles';
 

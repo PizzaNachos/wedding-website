@@ -162,10 +162,13 @@ export const en = {
 	registry: {
 		title: 'Registry',
 		subtitle:
-			"Your presence is the greatest gift of all. But if you'd like to contribute to our new life together, here are some ideas that inspire us.",
-		venmoTitle: 'Send a Gift via Venmo',
-		venmoSubtitle: 'Feel free to include a note with which "gift" inspired you!',
-		venmoButton: 'Open Venmo',
+			"Your presence is the greatest gift of all. But if you'd like to contribute to our new life together, here are a couple of ways you can do so.",
+		registryTitle: 'Our Registry',
+		registrySubtitle: 'Browse our Crate & Barrel registry for gift ideas we love.',
+		registryButton: 'View Registry',
+		cashTitle: 'Cash Registry',
+		cashSubtitle: 'Feel free to include a note with which "gift" inspired you!',
+		cashButton: 'Open Venmo',
 		giftTitle: 'Gift Inspiration',
 		giftFooter: 'These are just ideas for inspiration — any amount is deeply appreciated!'
 	},

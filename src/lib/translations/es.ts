@@ -165,10 +165,13 @@ export const es: Translation = {
 	registry: {
 		title: 'Lista de Regalos',
 		subtitle:
-			'Tu presencia es el mayor regalo de todos. Pero si deseas contribuir a nuestra nueva vida juntos, aquí hay algunas ideas que nos inspiran.',
-		venmoTitle: 'Envía un Regalo por Venmo',
-		venmoSubtitle: '¡No olvides incluir una nota con qué "regalo" te inspiró!',
-		venmoButton: 'Abrir Venmo',
+			'Tu presencia es el mayor regalo de todos. Pero si deseas contribuir a nuestra nueva vida juntos, aquí hay un par de formas en que puedes hacerlo.',
+		registryTitle: 'Nuestra Lista',
+		registrySubtitle: 'Explora nuestra lista de regalos en Crate & Barrel.',
+		registryButton: 'Ver Lista',
+		cashTitle: 'Registro en Efectivo',
+		cashSubtitle: '¡No olvides incluir una nota con qué "regalo" te inspiró!',
+		cashButton: 'Abrir Venmo',
 		giftTitle: 'Inspiración para Regalos',
 		giftFooter:
 			'¡Estas son solo ideas de inspiración — cualquier cantidad es profundamente apreciada!'
