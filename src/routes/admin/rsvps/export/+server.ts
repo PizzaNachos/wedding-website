@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('guests')
 				.select(
-					'id, first_name, last_name, is_child, household_id, households(name), rsvps(event_id, attending, dietary_restrictions, submitted_at)'
+					'id, first_name, last_name, is_child, is_plus_one, household_id, households(name), rsvps(event_id, attending, dietary_restrictions, submitted_at)'
 				)
 				.order('last_name', { ascending: true }),
 			supabase.from('events').select('id, name').order('sort_order', { ascending: true }),
@@ -35,6 +35,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		'Guest Name',
 		'Household',
 		'Child',
+		'Plus One',
 		...eventList.map((e) => e.name),
 		'Dietary Restrictions',
 		'Email',
@@ -96,6 +97,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			`${guest.first_name} ${guest.last_name}`,
 			household?.name ?? '',
 			guest.is_child ? 'Yes' : 'No',
+			guest.is_plus_one ? 'Yes' : 'No',
 			...eventCols,
 			dietaryStr,
 			contact?.email ?? '',

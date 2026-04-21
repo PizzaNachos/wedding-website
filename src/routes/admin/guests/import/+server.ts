@@ -150,6 +150,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 
 			const isChild = row['is_child']?.trim() ? parseBoolean(row['is_child']) : false;
+			const allowsPlusOne = row['allows_plus_one']?.trim() ? parseBoolean(row['allows_plus_one']) : false;
 
 			const { data: newGuest, error: guestErr } = await supabase
 				.from('guests')
@@ -157,7 +158,8 @@ export const POST: RequestHandler = async ({ request }) => {
 					household_id: householdId,
 					first_name: firstName,
 					last_name: lastName,
-					is_child: isChild
+					is_child: isChild,
+					allows_plus_one: allowsPlusOne
 				})
 				.select('id')
 				.single();

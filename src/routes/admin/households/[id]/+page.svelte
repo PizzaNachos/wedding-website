@@ -86,6 +86,12 @@
 									{#if guest.is_child}
 										<span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">Child</span>
 									{/if}
+									{#if guest.is_plus_one}
+										<span class="rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700">+1</span>
+									{/if}
+									{#if guest.allows_plus_one}
+										<span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700">+1 eligible</span>
+									{/if}
 								</td>
 								<td class="px-3 py-2">
 									<span class="rounded-full px-2 py-0.5 text-xs font-medium {attending.color}">
@@ -142,6 +148,10 @@
 				<label class="flex items-center gap-2">
 					<input type="checkbox" name="is_child" class="rounded border-gray-300" />
 					<span class="text-sm text-gray-700">Child</span>
+				</label>
+				<label class="flex items-center gap-2">
+					<input type="checkbox" name="allows_plus_one" class="rounded border-gray-300" />
+					<span class="text-sm text-gray-700">Allows +1</span>
 				</label>
 			</div>
 			<div class="mt-3 flex flex-wrap items-center gap-3">

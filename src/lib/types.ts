@@ -12,6 +12,9 @@ export interface Guest {
 	first_name: string;
 	last_name: string;
 	is_child: boolean;
+	allows_plus_one: boolean;
+	is_plus_one: boolean;
+	plus_one_of: string | null;
 	created_at: string;
 }
 
@@ -22,6 +25,7 @@ export interface Event {
 	time: string;
 	location: string | null;
 	description: string | null;
+	description_es: string | null;
 	image_path: string | null;
 	address: string | null;
 	sort_order: number;

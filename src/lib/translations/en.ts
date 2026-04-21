@@ -40,44 +40,42 @@ export const en = {
 				date: 'Spring 2023',
 				title: 'How We Met',
 				description:
-					"Michael was a tutor in the computer science department at DU — and apparently, word got around that he was a good one. Nayeli had heard from a friend and did what any resourceful CS student would do: went through said friend's calendar to track down the mystery tutor. After a few weeks of perfectly professional sessions, Michael worked up the nerve to ask if she wanted to grab palomas. On March 3rd, she said yes — and something that started as homework help quietly became something a whole lot better."
+					"In his last year at DU Michael had managed to get a job as a programming tutor for the computer science department. At the same time Nayeli had just started her computer science minor and it was getting tough. By spring Nayeli needed some more help than the regular professors could provide and had heard through some friends that the departments had hired some amazing tutors. She scheduled a tutor slot with Michael and they met for the first time in the bottom floor of the DU library. After a few weeks Michael worked up the nerve to ask Nayeli out for palomas and they went and watch the improv clubs springtime improv show together. "
 			},
 			{
 				date: 'March 2023',
 				title: 'The First Date',
 				description:
-					'A week or so after the palomas, we made it official with a real first date — Indian food and the kind of conversation that makes you forget to check the time. It went well. Really, really well.'
+					'A little while after the improv show Michael asked her out for a real date. He took her out to an Indian restaurant (which she had never been to) and made Michael order for her since she couldn’t even pronounce most of the dishes on the menu. She ended up with Chicken Biryani which she fondly remembers as a giant bowl of rice.'
 			},
 			{
 				date: 'Spring\u2013Summer 2023',
 				title: 'Falling in Love',
 				description:
-					'A couple months in, Michael asked her to be his girlfriend — and she said yes.'
+					'Little by little they wanted to spend more and more time together. Michael made it official and asked Nayeli to be his girlfriend. This worked out in Nayeli’s favor since she could get help with her comp Sci homework anytime! After not too long they were both head over heels for each other.'
 			},
 			{
 				date: '2023-2025',
 				title: 'Adventures Together',
 				description:
-					"From hiking Rocky Mountain trails to vacationing in Crested Butte and Moab, we've explored some of the most beautiful places together. Every adventure was better with each other. We learned that home isn't a place — it's a person."
+					"Eventually Michael graduated college, then Nayeli, then Nayeli again for her masters degree.  By that time they had started traveling to the mountains and visiting quaint beautiful towns. They spent  summer weekends in towns like Crested Butte and Steamboat hiking through forests. "
 			},
 			{
 				date: 'October 2025',
 				id: 'proposal',
 				title: 'The Proposal',
-				description:
-					'Michael tried to propose multiple times, but every trip he planned turned into a group trip because Nayeli invited friends to join them. So he kept waiting for the right one-on-one moment. After three separate trips, it finally happened - and the answer was the easiest yes of all time.',
-				multiPhotos: [
+				description: 'Michael had spent months planning a proposal, he visited jewelry stores with Nayelis best friend several times to pick out a ring. He took her parents out to ask for her hand and planned a trip to the mountains. A few weeks before the trip Michael woke up to read that Nayeli had invited numerous friends on the trip and turned it into friends adventure! Panicking he immediately planned another trip the weekend before. The timing for that trip wasn’t right either. Finally, a third trip was planned to glenwood springs and everything was set right. The morning of the big question they got up early to catch the sun rise on their hike. The proposal was going to be beautiful! On the drive to the trail head, there was a mud slide across the road and they had to turn the car around. Nayeli was excited to go back to sleep. Little did she know Michael’s third proposal plans had just gone awry. He panicked to quickly find another hike to go on to propose. By this point, Nayeli was really looking forward to going back to bed. Michael knew he needed to act fast. They started their next hike and made it twenty minutes up the mountain. He set up his phone to take a photo and caught Nayeli off guard with the surprise proposal she’d always wanted.'				multiPhotos: [
 					{
 						title: 'Attempt #1',
-						caption: 'The ring was packed. Nayeli invited friends.'
+						caption: 'Steamboat springs in the fall (Michael wanted to propose here).'
 					},
 					{
 						title: 'Attempt #2',
-						caption: 'Another beautiful trip. Nayeli invited more friends.'
+						caption: 'Crested butte leaves changing (Michael also wanted to propose here).'
 					},
 					{
 						title: 'Attempt #3',
-						caption: 'At this point, it just had to happen.'
+						caption: 'Carbondale in the rain (Michael finally was able to propose to a very cold and grumpy Nayeli)'
 					}
 				]
 			},
@@ -87,9 +85,9 @@ export const en = {
 				description:
 					"And now we get to celebrate our love with all of you! We can't wait to start this next chapter surrounded by the people who mean the most to us."
 			}
-			]
-		},
-		faqs: {
+		]
+	},
+	faqs: {
 		title: 'Questions & Answers',
 		subtitle: 'Everything you need to know about our big day.',
 		footer: "Still have questions? Don't hesitate to reach out to us directly!",
@@ -97,7 +95,7 @@ export const en = {
 			{
 				question: 'What is the dress code?',
 				answer:
-					'We kindly request semi-formal/cocktail attire. Think elegant but comfortable — you will be celebrating with us all evening!'
+					'We kindly request formal attire. For the ceremony in the church we request a more modest look, feel free to change after for the reception.'
 			},
 			{
 				question: 'Can I bring a plus one?',
@@ -105,14 +103,24 @@ export const en = {
 					'Due to venue capacity, we can only accommodate those listed on your invitation. If you received a plus one, it will be indicated on your RSVP.'
 			},
 			{
-				question: 'Will there be parking at the venue?',
+				question: 'Are children welcome?',
 				answer:
-					'Yes! Free parking is available at the venue. We also recommend rideshare services if you plan to enjoy the open bar.'
+					"We love the little ones in our lives! Children are welcome if they are listed on your invitation — please be sure to RSVP for each family member individually. For those without little ones on their invite, we hope you'll enjoy a fun night out and a well-deserved celebration!"
 			},
 			{
-				question: 'Is the venue wheelchair accessible?',
+				question: 'Will there be parking at the venue?',
 				answer:
-					'Yes, the venue is fully accessible. Please let us know if you have any specific accessibility needs and we will make sure everything is arranged.'
+					'Yes! There is free and ample parking available at the reception venue. The reception venue also allows overnight parking. We recommend carpooling to the ceremony venue as there is virtually no parking there.'
+			},
+			{
+				question: 'Will there be food at the reception?',
+				answer:
+					'Yes! There is a cocktail hour starting at 3:30 with light appetizers and dinner starting at 5pm. Please indicate on your RSVP your dietary restrictions.'
+			},
+			{
+				question: 'Are the venues wheelchair accessible?',
+				answer:
+					'The ceremony in the church is unfortunately not wheelchair accessible. However, the reception is fully accessible. Please let us know if you have any specific accessibility needs and we will make sure everything is arranged.'
 			},
 			{
 				question: 'What time should I arrive?',
@@ -122,12 +130,12 @@ export const en = {
 			{
 				question: 'Will there be an open bar?',
 				answer:
-					'Yes! We will have a full open bar during the reception with beer, wine, cocktails, and non-alcoholic options.'
+					'Unfortunately there will not be an open bar! We will serve wine with dinner but the bar will be a cash bar for the evening.'
 			},
 			{
 				question: 'Can I take photos during the ceremony?',
 				answer:
-					'We kindly ask for an unplugged ceremony — please turn off phones and cameras. Our photographer will capture every moment! You are welcome to take photos during the reception.'
+					'We kindly ask for an unplugged ceremony — please turn off phones and cameras. Our professional photographers will capture every moment! You are welcome to take photos during the reception.'
 			},
 			{
 				question: "What if I can't make it?",
@@ -217,7 +225,14 @@ export const en = {
 			'Gluten-Free': 'Gluten-Free',
 			'Dairy-Free': 'Dairy-Free',
 			'Nut Allergy': 'Nut Allergy'
-		} as Record<string, string>
+		} as Record<string, string>,
+		plusOneBadge: '(Plus One)',
+		plusOneInvite: 'You may bring a guest! Enter their name below.',
+		plusOneFirstName: 'First Name',
+		plusOneLastName: 'Last Name',
+		addPlusOne: 'Add Plus One',
+		removePlusOne: 'Remove Plus One',
+		plusOneOf: 'Plus one of'
 	}
 };
 

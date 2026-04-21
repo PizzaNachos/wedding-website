@@ -4,12 +4,56 @@
 	import { COUPLE } from '$lib/config';
 	import { i18n } from '$lib/i18n.svelte';
 	import { guestSession } from '$lib/guest-session.svelte';
+	import type { Guest } from '$lib/types';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	const hasAdults = $derived(data.household.guests.some((g: { is_child: boolean }) => !g.is_child));
 	const hasExistingRsvp = $derived(data.existingRsvps.length > 0);
+
+	// Plus-one derived state
+	const allGuests = $derived(data.household.guests as Guest[]);
+
+	const primaryGuests = $derived(allGuests.filter((g) => !g.is_plus_one));
+
+	const plusOneByHostId = $derived(
+		new Map(
+			allGuests
+				.filter((g) => g.is_plus_one && g.plus_one_of)
+				.map((g) => [g.plus_one_of!, g] as [string, Guest])
+		)
+	);
+
+	// Track per-guest attendance reactively
+	let guestAttendance = $state(new Map<string, Map<string, boolean | null>>());
+
+	$effect(() => {
+		const map = new Map<string, Map<string, boolean | null>>();
+		for (const guest of data.household.guests) {
+			const eventMap = new Map<string, boolean | null>();
+			for (const rsvp of data.existingRsvps) {
+				if (rsvp.guest_id === guest.id) {
+					eventMap.set(rsvp.event_id, rsvp.attending);
+				}
+			}
+			map.set(guest.id, eventMap);
+		}
+		guestAttendance = map;
+	});
+
+	function handleAttendanceChange(guestId: string, eventId: string, attending: boolean) {
+		const eventMap = guestAttendance.get(guestId) ?? new Map();
+		eventMap.set(eventId, attending);
+		guestAttendance.set(guestId, eventMap);
+		guestAttendance = new Map(guestAttendance);
+	}
+
+	function hostAcceptsAnyEvent(guestId: string): boolean {
+		const eventMap = guestAttendance.get(guestId);
+		if (!eventMap) return false;
+		return [...eventMap.values()].some((v) => v === true);
+	}
 
 	// Events visible to this household (any guest in household is invited)
 	function formatTime(time: string): string {
@@ -24,9 +68,7 @@
 	const householdEventIds = $derived(
 		new Set(data.guestEvents.map((ge: { event_id: string }) => ge.event_id))
 	);
-	const visibleEvents = $derived(
-		data.events.filter((e: { id: string }) => householdEventIds.has(e.id))
-	);
+	const visibleEvents = $derived(data.events);
 
 	const receptionEvent = $derived(
 		data.events.find((e: { name: string }) => e.name === 'Reception')
@@ -82,20 +124,24 @@
 								<div class="gap-3; relative z-10 flex items-start justify-between pb-8">
 									<div>
 										<p class="font-serif text-xl text-brown">{event.name}</p>
-										<p class="mt-1 mr-4 text-sm leading-relaxed text-brown-light">
-											{event.location}
-										</p>
-										<p class="mt-1 mr-4 text-sm leading-relaxed text-brown-light">
-											{event.address}
-										</p>
+										{#if householdEventIds.has(event.id)}
+											<p class="mt-1 mr-4 text-sm leading-relaxed text-brown-light">
+												{event.location}
+											</p>
+											<p class="mt-1 mr-4 text-sm leading-relaxed text-brown-light">
+												{event.address}
+											</p>
+										{/if}
 										<pre
-											class="mt-4 mr-4 font-serif text-xs leading-relaxed whitespace-pre-wrap text-brown-light">{event.description}</pre>
+											class="mt-4 mr-4 font-serif text-xs leading-relaxed whitespace-pre-wrap text-brown-light">{(i18n.locale === 'es' && event.description_es) ? event.description_es : event.description}</pre>
 									</div>
-									<span
-										class="rounded-full border-2 bg-burgundy/20 px-3 py-1 text-sm font-semibold tracking-[0.18em] whitespace-nowrap text-burgundy-dark uppercase"
-									>
-										{formatTime(event.time)}
-									</span>
+									{#if householdEventIds.has(event.id)}
+										<span
+											class="rounded-full border-2 bg-burgundy/20 px-3 py-1 text-sm font-semibold tracking-[0.18em] whitespace-nowrap text-burgundy-dark uppercase"
+										>
+											{formatTime(event.time)}
+										</span>
+									{/if}
 								</div>
 							</div>
 						{/each}
@@ -105,7 +151,7 @@
 		</aside>
 
 		<div class="rounded-[2rem] border border-burgundy p-4 shadow-sm sm:p-6 lg:p-7">
-			{#if form?.success}
+			{#if form?.success && !('action' in (form ?? {}))}
 				<div class="rounded-[1.75rem] border border-burgundy bg-burgundy/10 p-6 text-center sm:p-8">
 					<p class="font-script text-3xl text-burgundy-dark">{i18n.t.rsvpCode.thankYou}</p>
 					<p class="mt-3 text-brown-light">
@@ -221,19 +267,114 @@
 					{/if}
 
 					<div class="space-y-4">
-						{#each data.household.guests as guest}
+						{#each primaryGuests as guest}
 							<RsvpGuestForm
 								{guest}
 								events={data.events}
 								guestEvents={data.guestEvents}
 								existingRsvps={data.existingRsvps}
+								onAttendanceChange={handleAttendanceChange}
 							/>
+
+							{#if guest.allows_plus_one}
+								{@const plusOne = plusOneByHostId.get(guest.id)}
+
+								{#if plusOne}
+									<!-- Existing plus-one: show their RSVP form + edit/remove controls -->
+									<div class="mb-3 flex items-center justify-between">
+										<p class="text-sm font-medium text-brown">
+											{i18n.t.rsvpForm.plusOneOf}
+											{guest.first_name}
+										</p>
+										<button
+											type="submit"
+											formaction="?/removePlusOne"
+											class="text-xs text-burgundy hover:underline"
+											onclick={(e) => {
+												if (!confirm('Remove plus one?')) e.preventDefault();
+											}}
+										>
+											<input type="hidden" name="plus_one_id" value={plusOne.id} />
+											{i18n.t.rsvpForm.removePlusOne}
+										</button>
+									</div>
+
+									<!-- Inline name edit -->
+									<div class="mb-3 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+										<input
+											type="text"
+											name="plus_one_first_name"
+											value={plusOne.first_name}
+											placeholder={i18n.t.rsvpForm.plusOneFirstName}
+											class="touch-target w-full rounded-xl border-burgundy-light bg-white px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
+										/>
+										<input
+											type="text"
+											name="plus_one_last_name"
+											value={plusOne.last_name}
+											placeholder={i18n.t.rsvpForm.plusOneLastName}
+											class="touch-target w-full rounded-xl border-burgundy-light bg-white px-3 py-2 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
+										/>
+										<input type="hidden" name="plus_one_id" value={plusOne.id} />
+										<button
+											type="submit"
+											formaction="?/updatePlusOneName"
+											class="rounded-xl border border-burgundy-light bg-ivory px-3 py-2 text-xs font-medium text-brown-light transition-colors hover:bg-burgundy/10"
+										>
+											Save
+										</button>
+									</div>
+
+									<RsvpGuestForm
+										guest={plusOne}
+										events={data.events}
+										guestEvents={data.guestEvents}
+										existingRsvps={data.existingRsvps}
+										onAttendanceChange={handleAttendanceChange}
+										isPlusOne={true}
+									/>
+								{:else if hostAcceptsAnyEvent(guest.id)}
+									<!-- No plus-one yet, host accepts at least one event -->
+									<div
+										class="rounded-[1.75rem] border border-dashed border-burgundy-light p-4 text-center"
+									>
+										<p class="mb-3 text-sm text-brown-light">
+											{i18n.t.rsvpForm.plusOneInvite}
+										</p>
+										<div class="mx-auto mb-3 grid max-w-sm gap-2 sm:grid-cols-2">
+											<input
+												type="text"
+												name="plus_one_first_name"
+												required
+												placeholder={i18n.t.rsvpForm.plusOneFirstName}
+												class="touch-target w-full rounded-xl border-burgundy-light bg-white px-3 py-3 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
+											/>
+											<input
+												type="text"
+												name="plus_one_last_name"
+												required
+												placeholder={i18n.t.rsvpForm.plusOneLastName}
+												class="touch-target w-full rounded-xl border-burgundy-light bg-white px-3 py-3 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
+											/>
+										</div>
+										<input type="hidden" name="host_guest_id" value={guest.id} />
+										<button
+											type="submit"
+											formaction="?/addPlusOne"
+											class="inline-flex items-center justify-center rounded-full border border-burgundy bg-burgundy/10 px-6 py-2 text-sm font-semibold tracking-wide text-burgundy transition-colors hover:bg-burgundy/20"
+										>
+											{i18n.t.rsvpForm.addPlusOne}
+										</button>
+									</div>
+								{/if}
+							{/if}
 						{/each}
 					</div>
 
 					<div class="pt-2 text-center sm:text-left">
 						<button
 							type="submit"
+							formaction="?/submitRsvp"
 							class="touch-target inline-flex w-full items-center justify-center rounded-full border-2 border-burgundy bg-burgundy px-10 py-3 text-sm font-semibold tracking-[0.22em] text-white uppercase transition-colors hover:border-burgundy-dark hover:bg-burgundy-dark focus:ring-2 focus:ring-burgundy focus:ring-offset-2 focus:outline-none sm:w-auto"
 						>
 							{i18n.t.rsvpCode.submit}

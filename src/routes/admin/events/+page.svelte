@@ -60,6 +60,10 @@
 					<span class="mb-1 block text-sm font-medium text-gray-700">Description</span>
 					<textarea name="description" rows="2" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"></textarea>
 				</label>
+				<label class="block sm:col-span-2">
+					<span class="mb-1 block text-sm font-medium text-gray-700">Description (Spanish)</span>
+					<textarea name="description_es" rows="2" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"></textarea>
+				</label>
 				<label class="block">
 					<span class="mb-1 block text-sm font-medium text-gray-700">Address</span>
 					<input type="text" name="address" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" />
@@ -117,6 +121,7 @@
 										<input type="text" name="location" value={event.location ?? ''} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Location" />
 									</div>
 									<textarea name="description" rows="2" class="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Description">{event.description ?? ''}</textarea>
+								<textarea name="description_es" rows="2" class="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Description (Spanish)">{event.description_es ?? ''}</textarea>
 									<div class="mt-3 grid gap-3 sm:grid-cols-3">
 										<input type="text" name="address" value={event.address ?? ''} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Address" />
 										<input type="text" name="image_path" value={event.image_path ?? ''} class="rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="Image path" />

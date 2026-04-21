@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			supabase
 				.from('guests')
 				.select(
-					'id, first_name, last_name, is_child, household_id, households(name), rsvps(id, event_id, attending, dietary_restrictions, submitted_at, updated_at)'
+					'id, first_name, last_name, is_child, is_plus_one, household_id, households(name), rsvps(id, event_id, attending, dietary_restrictions, submitted_at, updated_at)'
 				)
 				.order('last_name', { ascending: true }),
 			supabase.from('events').select('id, name').order('sort_order', { ascending: true }),
@@ -37,6 +37,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		guestId: string;
 		guestName: string;
 		householdName: string;
+		isPlusOne: boolean;
 		eventAttendance: Record<string, boolean | null>; // keyed by event_id
 		eventInvited: Record<string, boolean>; // keyed by event_id
 		dietaryRestrictions: { selections: string[]; other: string } | null;
@@ -93,6 +94,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			guestId: guest.id,
 			guestName: `${guest.first_name} ${guest.last_name}`,
 			householdName: household?.name ?? '',
+			isPlusOne: guest.is_plus_one ?? false,
 			eventAttendance,
 			eventInvited,
 			dietaryRestrictions: dietary,

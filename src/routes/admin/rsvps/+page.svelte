@@ -177,7 +177,12 @@
 						</tr>
 					{:else}
 						<tr class="border-b border-gray-50">
-							<td class="px-4 py-3 font-medium text-gray-900">{row.guestName}</td>
+							<td class="px-4 py-3 font-medium text-gray-900">
+								{row.guestName}
+								{#if row.isPlusOne}
+									<span class="ml-1 rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700">+1</span>
+								{/if}
+							</td>
 							<td class="px-4 py-3 text-gray-600">{row.householdName}</td>
 							{#each data.events as event}
 								{@const pill = attendancePill(row.eventAttendance[event.id], row.eventInvited[event.id])}

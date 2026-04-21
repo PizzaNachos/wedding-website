@@ -8,9 +8,11 @@
 		events: Event[];
 		guestEvents: GuestEvent[];
 		existingRsvps: Rsvp[];
+		onAttendanceChange?: (guestId: string, eventId: string, attending: boolean) => void;
+		isPlusOne?: boolean;
 	}
 
-	let { guest, events, guestEvents, existingRsvps }: Props = $props();
+	let { guest, events, guestEvents, existingRsvps, onAttendanceChange, isPlusOne = false }: Props = $props();
 
 	const invitedEventIds = $derived(
 		new Set(guestEvents.filter((ge) => ge.guest_id === guest.id).map((ge) => ge.event_id))
@@ -82,6 +84,13 @@
 			</h3>
 		</div>
 		<div class="flex flex-wrap items-center gap-2">
+			{#if isPlusOne}
+				<span
+					class="rounded-full border border-burgundy-light bg-ivory px-3 py-1 text-xs font-medium text-brown-light"
+				>
+					{i18n.t.rsvpForm.plusOneBadge}
+				</span>
+			{/if}
 			{#if guest.is_child}
 				<span
 					class="rounded-full border border-burgundy-light bg-ivory px-3 py-1 text-xs font-medium text-brown-light"
@@ -117,6 +126,7 @@
 							onchange={() => {
 								if (receptionEvent && event.id === receptionEvent.id)
 									handleReceptionChange(true);
+								onAttendanceChange?.(guest.id, event.id, true);
 							}}
 							class="sr-only"
 						/>
@@ -133,6 +143,7 @@
 							onchange={() => {
 								if (receptionEvent && event.id === receptionEvent.id)
 									handleReceptionChange(false);
+								onAttendanceChange?.(guest.id, event.id, false);
 							}}
 							class="sr-only"
 						/>

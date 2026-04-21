@@ -85,6 +85,7 @@ export const actions: Actions = {
 		const first_name = formData.get('first_name') as string;
 		const last_name = formData.get('last_name') as string;
 		const is_child = formData.get('is_child') === 'on';
+		const allows_plus_one = formData.get('allows_plus_one') === 'on';
 
 		if (!first_name || !last_name) {
 			return fail(400, { error: 'First and last name are required.' });
@@ -92,7 +93,7 @@ export const actions: Actions = {
 
 		const { data: newGuest, error: err } = await supabase
 			.from('guests')
-			.insert({ first_name, last_name, is_child, household_id: params.id })
+			.insert({ first_name, last_name, is_child, allows_plus_one, household_id: params.id })
 			.select('id')
 			.single();
 

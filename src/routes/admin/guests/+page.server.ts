@@ -57,17 +57,17 @@ export const load: PageServerLoad = async ({ url }) => {
 		emailByHouseholdId[c.household_id] = c.email;
 	}
 
-	// Fetch guest_events with event names
+	// Fetch guest_events with event names and IDs
 	const { data: guestEventsList } = await supabase
 		.from('guest_events')
-		.select('guest_id, events(name)');
+		.select('guest_id, event_id, events(name)');
 
-	const eventsByGuestId: Record<string, string[]> = {};
+	const eventsByGuestId: Record<string, { name: string; event_id: string }[]> = {};
 	for (const ge of guestEventsList ?? []) {
 		const eventName = (ge.events as unknown as { name: string })?.name;
 		if (eventName) {
 			if (!eventsByGuestId[ge.guest_id]) eventsByGuestId[ge.guest_id] = [];
-			eventsByGuestId[ge.guest_id].push(eventName);
+			eventsByGuestId[ge.guest_id].push({ name: eventName, event_id: ge.event_id });
 		}
 	}
 

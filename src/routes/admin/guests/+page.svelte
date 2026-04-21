@@ -51,6 +51,13 @@
 		return 'bg-yellow-100 text-yellow-700';
 	}
 
+	function getEventPillColor(guest: (typeof data.guests)[0], eventId: string): string {
+		const rsvp = guest.rsvps?.find((r: { event_id: string }) => r.event_id === eventId);
+		if (!rsvp || rsvp.attending === null) return 'bg-yellow-100 text-yellow-700';
+		if (rsvp.attending === true) return 'bg-green-100 text-green-700';
+		return 'bg-red-100 text-red-700';
+	}
+
 	function getDietary(guest: (typeof data.guests)[0]): string {
 		console.log('Giest diet,', guest);
 		const rsvp = guest.rsvps;
@@ -239,6 +246,16 @@
 									>Child</span
 								>
 							{/if}
+							{#if guest.is_plus_one}
+								<span class="ml-1 rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700"
+									>+1</span
+								>
+							{/if}
+							{#if guest.allows_plus_one}
+								<span class="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-700"
+									>+1 eligible</span
+								>
+							{/if}
 						</td>
 						<td class="px-4 py-3 text-gray-600">
 							{#if guest.households}
@@ -260,9 +277,9 @@
 						<td class="px-4 py-3">
 							{#if guestEventNames.length > 0}
 								<div class="flex flex-wrap gap-1">
-									{#each guestEventNames as eventName}
-										<span class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-											{eventName}
+									{#each guestEventNames as event}
+										<span class="rounded-full px-2 py-0.5 text-xs font-medium {getEventPillColor(guest, event.event_id)}">
+											{event.name}
 										</span>
 									{/each}
 								</div>

@@ -33,12 +33,12 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ request, params }) => {
+	submitRsvp: async ({ request, params }) => {
 		const { code } = params;
 
 		const { data: household } = await supabase
 			.from('households')
-			.select('*, guests(id, is_child)')
+			.select('*, guests(id, is_child, allows_plus_one, is_plus_one, plus_one_of)')
 			.eq('unique_code', code)
 			.single();
 
@@ -179,6 +179,215 @@ export const actions: Actions = {
 			}
 		}
 
+		// 5. Auto-decline plus-ones if host declined all events
+		const hostsWithPlusOne = household.guests.filter(
+			(g: { id: string; allows_plus_one: boolean }) => g.allows_plus_one
+		);
+
+		for (const host of hostsWithPlusOne) {
+			const hostEvents = guestEventAttending.get(host.id);
+			if (!hostEvents) continue;
+
+			const allDeclined = [...hostEvents.values()].every((a) => a === false);
+			if (!allDeclined) continue;
+
+			// Find the plus-one guest for this host
+			const { data: plusOneGuests } = await supabase
+				.from('guests')
+				.select('id')
+				.eq('plus_one_of', host.id);
+
+			if (!plusOneGuests?.length) continue;
+
+			const plusOneId = plusOneGuests[0].id;
+
+			// Get plus-one's event assignments
+			const { data: plusOneEvents } = await supabase
+				.from('guest_events')
+				.select('event_id')
+				.eq('guest_id', plusOneId);
+
+			for (const pe of plusOneEvents ?? []) {
+				await supabase.from('rsvps').upsert(
+					{
+						guest_id: plusOneId,
+						event_id: pe.event_id,
+						attending: false,
+						dietary_restrictions: { selections: [], other: '' },
+						submitted_at: new Date().toISOString(),
+						updated_at: new Date().toISOString()
+					},
+					{ onConflict: 'guest_id,event_id' }
+				);
+			}
+		}
+
 		return { success: true, message: 'Thank you! Your RSVP has been submitted.' };
+	},
+
+	addPlusOne: async ({ request, params }) => {
+		const { code } = params;
+		const serviceClient = createServiceClient();
+
+		const { data: household } = await supabase
+			.from('households')
+			.select('*, guests(id, allows_plus_one, is_plus_one, plus_one_of)')
+			.eq('unique_code', code)
+			.single();
+
+		if (!household) {
+			throw error(404, 'Invitation not found');
+		}
+
+		const formData = await request.formData();
+		const hostGuestId = String(formData.get('host_guest_id') ?? '');
+		const firstName = String(formData.get('plus_one_first_name') ?? '').trim();
+		const lastName = String(formData.get('plus_one_last_name') ?? '').trim();
+
+		if (!firstName || !lastName) {
+			return { success: false, message: 'Please enter a first and last name for your guest.', action: 'addPlusOne' };
+		}
+
+		// Validate host belongs to household and allows plus one
+		const host = household.guests.find(
+			(g: { id: string; allows_plus_one: boolean }) => g.id === hostGuestId && g.allows_plus_one
+		);
+		if (!host) {
+			return { success: false, message: 'Invalid guest.', action: 'addPlusOne' };
+		}
+
+		// Check no existing plus-one
+		const existingPlusOne = household.guests.find(
+			(g: { plus_one_of: string | null }) => g.plus_one_of === hostGuestId
+		);
+		if (existingPlusOne) {
+			return { success: false, message: 'A plus one has already been added.', action: 'addPlusOne' };
+		}
+
+		// Insert plus-one guest
+		const { data: newGuest, error: insertError } = await serviceClient
+			.from('guests')
+			.insert({
+				household_id: household.id,
+				first_name: firstName,
+				last_name: lastName,
+				is_child: false,
+				is_plus_one: true,
+				plus_one_of: hostGuestId,
+				allows_plus_one: false
+			})
+			.select('id')
+			.single();
+
+		if (insertError || !newGuest) {
+			console.error('Plus-one insert error:', insertError);
+			return { success: false, message: 'Something went wrong. Please try again.', action: 'addPlusOne' };
+		}
+
+		// Copy host's guest_events
+		const { data: hostEvents } = await supabase
+			.from('guest_events')
+			.select('event_id')
+			.eq('guest_id', hostGuestId);
+
+		if (hostEvents?.length) {
+			const rows = hostEvents.map((ge) => ({
+				guest_id: newGuest.id,
+				event_id: ge.event_id
+			}));
+			await serviceClient.from('guest_events').insert(rows);
+
+			// Create pending RSVP rows
+			const rsvpRows = hostEvents.map((ge) => ({
+				guest_id: newGuest.id,
+				event_id: ge.event_id,
+				attending: null,
+				dietary_restrictions: { selections: [], other: '' },
+				updated_at: new Date().toISOString()
+			}));
+			await supabase.from('rsvps').insert(rsvpRows);
+		}
+
+		return { success: true, action: 'addPlusOne' };
+	},
+
+	removePlusOne: async ({ request, params }) => {
+		const { code } = params;
+		const serviceClient = createServiceClient();
+
+		const { data: household } = await supabase
+			.from('households')
+			.select('*, guests(id, is_plus_one)')
+			.eq('unique_code', code)
+			.single();
+
+		if (!household) {
+			throw error(404, 'Invitation not found');
+		}
+
+		const formData = await request.formData();
+		const plusOneId = String(formData.get('plus_one_id') ?? '');
+
+		const plusOne = household.guests.find(
+			(g: { id: string; is_plus_one: boolean }) => g.id === plusOneId && g.is_plus_one
+		);
+		if (!plusOne) {
+			return { success: false, message: 'Invalid guest.', action: 'removePlusOne' };
+		}
+
+		const { error: deleteError } = await serviceClient
+			.from('guests')
+			.delete()
+			.eq('id', plusOneId);
+
+		if (deleteError) {
+			console.error('Plus-one delete error:', deleteError);
+			return { success: false, message: 'Something went wrong. Please try again.', action: 'removePlusOne' };
+		}
+
+		return { success: true, action: 'removePlusOne' };
+	},
+
+	updatePlusOneName: async ({ request, params }) => {
+		const { code } = params;
+		const serviceClient = createServiceClient();
+
+		const { data: household } = await supabase
+			.from('households')
+			.select('*, guests(id, is_plus_one)')
+			.eq('unique_code', code)
+			.single();
+
+		if (!household) {
+			throw error(404, 'Invitation not found');
+		}
+
+		const formData = await request.formData();
+		const plusOneId = String(formData.get('plus_one_id') ?? '');
+		const firstName = String(formData.get('plus_one_first_name') ?? '').trim();
+		const lastName = String(formData.get('plus_one_last_name') ?? '').trim();
+
+		if (!firstName || !lastName) {
+			return { success: false, message: 'Please enter a first and last name.', action: 'updatePlusOneName' };
+		}
+
+		const plusOne = household.guests.find(
+			(g: { id: string; is_plus_one: boolean }) => g.id === plusOneId && g.is_plus_one
+		);
+		if (!plusOne) {
+			return { success: false, message: 'Invalid guest.', action: 'updatePlusOneName' };
+		}
+
+		const { error: updateError } = await serviceClient
+			.from('guests')
+			.update({ first_name: firstName, last_name: lastName })
+			.eq('id', plusOneId);
+
+		if (updateError) {
+			console.error('Plus-one update error:', updateError);
+			return { success: false, message: 'Something went wrong. Please try again.', action: 'updatePlusOneName' };
+		}
+
+		return { success: true, action: 'updatePlusOneName' };
 	}
 };

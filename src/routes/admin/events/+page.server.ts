@@ -23,6 +23,7 @@ export const actions: Actions = {
 		const time = formData.get('time') as string;
 		const location = (formData.get('location') as string) || null;
 		const description = (formData.get('description') as string) || null;
+		const description_es = (formData.get('description_es') as string) || null;
 
 		if (!name || !date || !time) {
 			return fail(400, { error: 'Name, date, and time are required.' });
@@ -32,7 +33,7 @@ export const actions: Actions = {
 		const address = (formData.get('address') as string) || null;
 		const sort_order = parseInt(formData.get('sort_order') as string) || 0;
 
-		const { error } = await supabase.from('events').insert({ name, date, time, location, description, image_path, address, sort_order });
+		const { error } = await supabase.from('events').insert({ name, date, time, location, description, description_es, image_path, address, sort_order });
 
 		if (error) {
 			return fail(500, { error: 'Failed to create event.' });
@@ -51,6 +52,7 @@ export const actions: Actions = {
 		const time = formData.get('time') as string;
 		const location = (formData.get('location') as string) || null;
 		const description = (formData.get('description') as string) || null;
+		const description_es = (formData.get('description_es') as string) || null;
 
 		if (!id || !name || !date || !time) {
 			return fail(400, { error: 'Name, date, and time are required.' });
@@ -62,7 +64,7 @@ export const actions: Actions = {
 
 		const { error } = await supabase
 			.from('events')
-			.update({ name, date, time, location, description, image_path, address, sort_order })
+			.update({ name, date, time, location, description, description_es, image_path, address, sort_order })
 			.eq('id', id);
 
 		if (error) {

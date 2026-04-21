@@ -46,6 +46,7 @@ export const actions: Actions = {
 		const last_name = formData.get('last_name') as string;
 		const household_id = formData.get('household_id') as string;
 		const is_child = formData.get('is_child') === 'on';
+		const allows_plus_one = formData.get('allows_plus_one') === 'on';
 
 		if (!first_name || !last_name || !household_id) {
 			return fail(400, { error: 'First name, last name, and household are required.' });
@@ -53,7 +54,7 @@ export const actions: Actions = {
 
 		const { error: guestError } = await supabase
 			.from('guests')
-			.update({ first_name, last_name, household_id, is_child })
+			.update({ first_name, last_name, household_id, is_child, allows_plus_one })
 			.eq('id', params.id);
 
 		if (guestError) {

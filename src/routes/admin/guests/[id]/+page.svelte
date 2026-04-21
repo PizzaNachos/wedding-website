@@ -41,10 +41,21 @@
 						{/each}
 					</select>
 				</label>
-				<label class="flex items-end gap-2 pb-2">
-					<input type="checkbox" name="is_child" class="rounded border-gray-300" checked={data.guest.is_child} />
-					<span class="text-sm text-gray-700">Child</span>
-				</label>
+				<div class="space-y-2 pb-2">
+					<label class="flex items-center gap-2">
+						<input type="checkbox" name="is_child" class="rounded border-gray-300" checked={data.guest.is_child} />
+						<span class="text-sm text-gray-700">Child</span>
+					</label>
+					{#if !data.guest.is_plus_one}
+						<label class="flex items-center gap-2">
+							<input type="checkbox" name="allows_plus_one" class="rounded border-gray-300" checked={data.guest.allows_plus_one} />
+							<span class="text-sm text-gray-700">Allows Plus One</span>
+						</label>
+					{/if}
+					{#if data.guest.is_plus_one}
+						<p class="text-sm text-purple-700">This guest is a plus one</p>
+					{/if}
+				</div>
 			</div>
 		</div>
 
