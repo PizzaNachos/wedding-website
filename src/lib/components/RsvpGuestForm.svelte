@@ -98,6 +98,13 @@
 					{i18n.t.rsvpForm.child}
 				</span>
 			{/if}
+			{#if guest.child_meal}
+				<span
+					class="rounded-full border border-burgundy-light bg-ivory px-3 py-1 text-xs font-medium text-brown-light"
+				>
+					{i18n.t.rsvpForm.childMealBadge}
+				</span>
+			{/if}
 			<span
 				class={`rounded-full border px-3 py-1 text-xs font-semibold tracking-[0.18em] uppercase ${guestStatus.classes}`}
 			>
@@ -108,48 +115,64 @@
 
 	<div class="space-y-3">
 		{#each invitedEvents as event, idx}
-			<div class="flex flex-row justify-between gap-4">
-				<div>
-					<p class="mb-1 text-sm font-semibold tracking-wide text-brown-light uppercase">
-						{event.name}
+			{@const isCeremony = event.name === 'Ceremony'}
+			<div>
+				<div class="flex flex-row justify-between gap-4">
+					<div>
+						<p class="mb-1 text-sm font-semibold tracking-wide text-brown-light uppercase">
+							{event.name}
+						</p>
+					</div>
+					<div class="flex gap-2">
+						<label
+							class="touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-2 py-1 text-center text-sm transition-colors has-[:checked]:border-burgundy has-[:checked]:bg-burgundy/20"
+						>
+							<input
+								type="radio"
+								name="guests[{guest.id}].events[{event.id}].attending"
+								value="yes"
+								checked={getRsvpForEvent(event.id)?.attending === true}
+								onchange={() => {
+									if (receptionEvent && event.id === receptionEvent.id)
+										handleReceptionChange(true);
+									onAttendanceChange?.(guest.id, event.id, true);
+								}}
+								class="sr-only"
+							/>
+							<span
+								>{isCeremony
+									? i18n.t.rsvpForm.ceremonyHoping
+									: i18n.t.rsvpForm.joyfullyAccepts}</span
+							>
+						</label>
+						<label
+							class="touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-2 py-1 text-center text-sm transition-colors has-[:checked]:border-burgundy/30 has-[:checked]:bg-burgundy/10"
+						>
+							<input
+								type="radio"
+								name="guests[{guest.id}].events[{event.id}].attending"
+								value="no"
+								checked={getRsvpForEvent(event.id)?.attending === false}
+								onchange={() => {
+									if (receptionEvent && event.id === receptionEvent.id)
+										handleReceptionChange(false);
+									onAttendanceChange?.(guest.id, event.id, false);
+								}}
+								class="sr-only"
+							/>
+							<span
+								>{isCeremony
+									? i18n.t.rsvpForm.ceremonyCannot
+									: i18n.t.rsvpForm.regretfullyDeclines}</span
+							>
+						</label>
+					</div>
+				</div>
+				{#if isCeremony}
+					<p class="mt-2 text-xs italic leading-relaxed text-brown-light/80">
+						{i18n.t.rsvpForm.ceremonyInterestNote}
 					</p>
-				</div>
-				<div class="flex gap-2">
-					<label
-						class="touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-2 py-1 text-center text-sm transition-colors has-[:checked]:border-burgundy has-[:checked]:bg-burgundy/20"
-					>
-						<input
-							type="radio"
-							name="guests[{guest.id}].events[{event.id}].attending"
-							value="yes"
-							checked={getRsvpForEvent(event.id)?.attending === true}
-							onchange={() => {
-								if (receptionEvent && event.id === receptionEvent.id)
-									handleReceptionChange(true);
-								onAttendanceChange?.(guest.id, event.id, true);
-							}}
-							class="sr-only"
-						/>
-						<span>{i18n.t.rsvpForm.joyfullyAccepts}</span>
-					</label>
-					<label
-						class="touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-2 py-1 text-center text-sm transition-colors has-[:checked]:border-burgundy/30 has-[:checked]:bg-burgundy/10"
-					>
-						<input
-							type="radio"
-							name="guests[{guest.id}].events[{event.id}].attending"
-							value="no"
-							checked={getRsvpForEvent(event.id)?.attending === false}
-							onchange={() => {
-								if (receptionEvent && event.id === receptionEvent.id)
-									handleReceptionChange(false);
-								onAttendanceChange?.(guest.id, event.id, false);
-							}}
-							class="sr-only"
-						/>
-						<span>{i18n.t.rsvpForm.regretfullyDeclines}</span>
-					</label>
-				</div>
+				{/if}
 			</div>
 			{#if idx < invitedEvents.length - 1}
 				<div class="my-4 h-px bg-linear-to-r from-transparent via-burgundy/40 to-transparent"></div>
@@ -162,29 +185,35 @@
 				<p class="mb-2 text-sm font-semibold tracking-wide text-brown-light uppercase">
 					{i18n.t.rsvpForm.dietaryRestrictions}
 				</p>
-				<div class="grid gap-2 min-[420px]:grid-cols-3">
-					{#each DIETARY_OPTIONS as option}
-						<label
-							class="touch-target flex cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-4 py-3 text-center text-sm transition-colors has-[:checked]:border-brown-light has-[:checked]:bg-brown-light/20"
-						>
-							<input
-								type="checkbox"
-								name="guests[{guest.id}].dietary[{option}]"
-								value="true"
-								checked={existingDietary?.selections?.includes(option)}
-								class="sr-only"
-							/>
-							<span>{i18n.t.rsvpForm.dietaryLabels[option] ?? option}</span>
-						</label>
-					{/each}
-				</div>
-				<input
-					type="text"
-					name="guests[{guest.id}].dietary[other]"
-					value={existingDietary?.other ?? ''}
-					placeholder={i18n.t.rsvpForm.dietaryOther}
-					class="touch-target mt-3 w-full rounded-xl border-burgundy-light bg-white px-3 py-3 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
-				/>
+				{#if guest.child_meal}
+					<p class="text-sm italic leading-relaxed text-brown-light">
+						{i18n.t.rsvpForm.childMealProvided}
+					</p>
+				{:else}
+					<div class="grid gap-2 min-[420px]:grid-cols-3">
+						{#each DIETARY_OPTIONS as option}
+							<label
+								class="touch-target flex cursor-pointer items-center justify-center gap-2 rounded-2xl border bg-white px-4 py-3 text-center text-sm transition-colors has-[:checked]:border-brown-light has-[:checked]:bg-brown-light/20"
+							>
+								<input
+									type="checkbox"
+									name="guests[{guest.id}].dietary[{option}]"
+									value="true"
+									checked={existingDietary?.selections?.includes(option)}
+									class="sr-only"
+								/>
+								<span>{i18n.t.rsvpForm.dietaryLabels[option] ?? option}</span>
+							</label>
+						{/each}
+					</div>
+					<input
+						type="text"
+						name="guests[{guest.id}].dietary[other]"
+						value={existingDietary?.other ?? ''}
+						placeholder={i18n.t.rsvpForm.dietaryOther}
+						class="touch-target mt-3 w-full rounded-xl border-burgundy-light bg-white px-3 py-3 text-sm text-brown placeholder:text-brown-light/50 focus:border-burgundy focus:ring-burgundy"
+					/>
+				{/if}
 			</div>
 		{/if}
 	</div>

@@ -12,6 +12,7 @@ export interface Guest {
 	first_name: string;
 	last_name: string;
 	is_child: boolean;
+	child_meal: boolean;
 	allows_plus_one: boolean;
 	is_plus_one: boolean;
 	plus_one_of: string | null;

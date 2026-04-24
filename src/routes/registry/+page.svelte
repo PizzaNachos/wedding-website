@@ -20,7 +20,9 @@
 	<!-- Two-column registry cards -->
 	<div class="mb-10 grid grid-cols-1 gap-6 sm:mb-12 md:grid-cols-2">
 		<!-- Crate & Barrel Registry -->
-		<div class="flex flex-col rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:p-8">
+		<div
+			class="flex flex-col rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:p-8"
+		>
 			<p class="mb-2 font-serif text-2xl text-brown">{i18n.t.registry.registryTitle}</p>
 			<p class="mb-6 text-sm text-brown-light">
 				{i18n.t.registry.registrySubtitle}
@@ -38,7 +40,9 @@
 		</div>
 
 		<!-- Cash / Venmo Registry -->
-		<div class="flex flex-col rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:p-8">
+		<div
+			class="flex flex-col rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 text-center sm:p-8"
+		>
 			<p class="mb-2 font-serif text-2xl text-brown">{i18n.t.registry.cashTitle}</p>
 			<p class="mb-6 text-sm text-brown-light">
 				{i18n.t.registry.cashSubtitle}
@@ -57,7 +61,7 @@
 	</div>
 
 	<!-- Gift ideas grid -->
-	<h2 class="mb-6 text-center font-serif text-2xl text-brown">{i18n.t.registry.giftTitle}</h2>
+	<!-- <h2 class="mb-6 text-center font-serif text-2xl text-brown">{i18n.t.registry.giftTitle}</h2>
 	<div class="grid grid-cols-1 gap-4 min-[380px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 		{#each GIFT_IDEAS as gift}
 			<GiftCard
@@ -68,7 +72,7 @@
 				href={VENMO_URL}
 			/>
 		{/each}
-	</div>
+	</div> -->
 
 	<p class="mt-8 text-center text-sm text-brown-light">
 		{i18n.t.registry.giftFooter}

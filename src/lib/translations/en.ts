@@ -162,7 +162,7 @@ export const en = {
 	registry: {
 		title: 'Registry',
 		subtitle:
-			"Your presence is the greatest gift of all. But if you'd like to contribute to our new life together, here are a couple of ways you can do so.",
+			"Your presence is the greatest gift of all. But if you'd like to contribute to our new life together, we have a cash registry and are saving for a house and future expenses. If you'd prefer to buy us a physical gift, we've also included a link to our Crate & Barrel registry here.",
 		registryTitle: 'Our Registry',
 		registrySubtitle: 'Browse our Crate & Barrel registry for gift ideas we love.',
 		registryButton: 'View Registry',
@@ -201,7 +201,9 @@ export const en = {
 		eventsTitle: 'Wedding Day Events',
 		eventsSubtitle: 'A quick look at where the celebration unfolds.',
 		eventsNote: 'Your events are shown here for reference. Your selections stay in the RSVP form.',
-		eventsImageAlt: 'A romantic RSVP illustration for Michael and Nayeli'
+		eventsImageAlt: 'A romantic RSVP illustration for Michael and Nayeli',
+		receptionSeatsSingular: 'Your party has {n} seat at the reception.',
+		receptionSeatsPlural: 'Your party has {n} seats at the reception.'
 	},
 	rsvpForm: {
 		child: '(Child)',
@@ -216,8 +218,14 @@ export const en = {
 		stateProvince: 'State / Province',
 		country: 'Country',
 		postalCode: 'Postal Code',
-		joyfullyAccepts: 'Joyfully Accepts',
-		regretfullyDeclines: 'Regretfully Declines',
+		joyfullyAccepts: 'Joyfully Accept',
+		regretfullyDeclines: 'Regretfully Decline',
+		ceremonyHoping: 'Hoping to attend',
+		ceremonyCannot: 'Cannot attend',
+		ceremonyInterestNote:
+			'Church seating is limited. Your response helps us gauge interest — it’s not a guaranteed seat.',
+		childMealBadge: '(Kids Meal)',
+		childMealProvided: "A children's meal will be provided",
 		dietaryRestrictions: 'Dietary Restrictions',
 		dietaryOther: 'Other dietary needs...',
 		statusPending: 'Pending',

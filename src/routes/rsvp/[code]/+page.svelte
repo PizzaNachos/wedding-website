@@ -17,6 +17,10 @@
 
 	const primaryGuests = $derived(allGuests.filter((g) => !g.is_plus_one));
 
+	const totalReservedSeats = $derived(
+		primaryGuests.length + primaryGuests.filter((g: Guest) => g.allows_plus_one).length
+	);
+
 	const plusOneByHostId = $derived(
 		new Map(
 			allGuests
@@ -265,6 +269,13 @@
 							</div>
 						</div>
 					{/if}
+
+					<p class="text-sm text-gray-600 mb-4">
+						{(totalReservedSeats === 1
+							? i18n.t.rsvpCode.receptionSeatsSingular
+							: i18n.t.rsvpCode.receptionSeatsPlural
+						).replace('{n}', String(totalReservedSeats))}
+					</p>
 
 					<div class="space-y-4">
 						{#each primaryGuests as guest}

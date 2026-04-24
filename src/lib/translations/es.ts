@@ -165,7 +165,7 @@ export const es: Translation = {
 	registry: {
 		title: 'Lista de Regalos',
 		subtitle:
-			'Tu presencia es el mayor regalo de todos. Pero si deseas contribuir a nuestra nueva vida juntos, aquí hay un par de formas en que puedes hacerlo.',
+			'Tu presencia es el mayor regalo de todos. Pero si deseas contribuir a nuestra nueva vida juntos, tenemos un registro en efectivo y estamos ahorrando para una casa y gastos futuros. Si prefieres regalarnos algo físico, también hemos incluido aquí un enlace a nuestra lista de regalos de Crate & Barrel.',
 		registryTitle: 'Nuestra Lista',
 		registrySubtitle: 'Explora nuestra lista de regalos en Crate & Barrel.',
 		registryButton: 'Ver Lista',
@@ -206,7 +206,9 @@ export const es: Translation = {
 		eventsSubtitle: 'Un vistazo rapido a donde se desarrolla la celebracion.',
 		eventsNote:
 			'Tus eventos aparecen aquí como referencia. Tus selecciones siguen en el formulario.',
-		eventsImageAlt: 'Ilustracion romantica para el RSVP de Michael y Nayeli'
+		eventsImageAlt: 'Ilustracion romantica para el RSVP de Michael y Nayeli',
+		receptionSeatsSingular: 'Tu grupo tiene {n} asiento en la recepción.',
+		receptionSeatsPlural: 'Tu grupo tiene {n} asientos en la recepción.'
 	},
 	rsvpForm: {
 		child: '(Niño/a)',
@@ -223,6 +225,12 @@ export const es: Translation = {
 		postalCode: 'Código Postal',
 		joyfullyAccepts: 'Acepta Con Gusto',
 		regretfullyDeclines: 'Declina Con Pesar',
+		ceremonyHoping: 'Espero asistir',
+		ceremonyCannot: 'No puedo asistir',
+		ceremonyInterestNote:
+			'La capacidad en la iglesia es limitada. Tu respuesta nos ayuda a estimar el interés — no garantiza un asiento.',
+		childMealBadge: '(Menú Infantil)',
+		childMealProvided: 'Se ofrecerá un menú infantil',
 		dietaryRestrictions: 'Restricciones Alimentarias',
 		dietaryOther: 'Otras necesidades alimentarias...',
 		statusPending: 'Pendiente',

@@ -2,6 +2,13 @@
 	import { enhance } from '$app/forms';
 
 	let { data, form } = $props();
+
+	let isChild = $state<boolean>(data.guest.is_child);
+	let childMeal = $state<boolean>(data.guest.child_meal);
+
+	$effect(() => {
+		if (!isChild) childMeal = false;
+	});
 </script>
 
 <svelte:head>
@@ -43,9 +50,15 @@
 				</label>
 				<div class="space-y-2 pb-2">
 					<label class="flex items-center gap-2">
-						<input type="checkbox" name="is_child" class="rounded border-gray-300" checked={data.guest.is_child} />
+						<input type="checkbox" name="is_child" class="rounded border-gray-300" bind:checked={isChild} />
 						<span class="text-sm text-gray-700">Child</span>
 					</label>
+					{#if isChild}
+						<label class="flex items-center gap-2 pl-6">
+							<input type="checkbox" name="child_meal" class="rounded border-gray-300" bind:checked={childMeal} />
+							<span class="text-sm text-gray-700">Kids Meal (12 and under)</span>
+						</label>
+					{/if}
 					{#if !data.guest.is_plus_one}
 						<label class="flex items-center gap-2">
 							<input type="checkbox" name="allows_plus_one" class="rounded border-gray-300" checked={data.guest.allows_plus_one} />

@@ -246,6 +246,11 @@
 									>Child</span
 								>
 							{/if}
+							{#if guest.child_meal}
+								<span class="ml-1 rounded-full bg-teal-100 px-2 py-0.5 text-xs text-teal-700"
+									>Kids Meal</span
+								>
+							{/if}
 							{#if guest.is_plus_one}
 								<span class="ml-1 rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700"
 									>+1</span

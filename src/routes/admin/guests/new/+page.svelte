@@ -8,6 +8,11 @@
 	let firstName = $state('');
 	let lastName = $state('');
 	let isChild = $state(false);
+	let childMeal = $state(false);
+
+	$effect(() => {
+		if (!isChild) childMeal = false;
+	});
 </script>
 
 <svelte:head>
@@ -35,6 +40,7 @@
 					firstName = '';
 					lastName = '';
 					isChild = false;
+					childMeal = false;
 				}
 			};
 		}}
@@ -81,6 +87,17 @@
 						/>
 						<span class="text-sm text-gray-700">Child</span>
 					</label>
+					{#if isChild}
+						<label class="flex items-center gap-2 pl-6">
+							<input
+								type="checkbox"
+								name="child_meal"
+								bind:checked={childMeal}
+								class="rounded border-gray-300"
+							/>
+							<span class="text-sm text-gray-700">Kids Meal (12 and under)</span>
+						</label>
+					{/if}
 					<label class="flex items-center gap-2">
 						<input
 							type="checkbox"
