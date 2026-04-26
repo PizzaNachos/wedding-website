@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/state';
 	import { COUPLE } from '$lib/config';
 	import { i18n } from '$lib/i18n.svelte';
 	import PhotoGrid from '$lib/components/PhotoGrid.svelte';
@@ -9,8 +10,9 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// Top-level view: gallery or upload
-	let view = $state<'gallery' | 'upload'>('gallery');
+	let view = $state<'gallery' | 'upload'>(
+		page.url.searchParams.get('upload') ? 'upload' : 'gallery'
+	);
 
 	// Gallery state manager
 	const gallery = new PhotoGalleryState();

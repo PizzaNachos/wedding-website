@@ -45,4 +45,43 @@
 	{#if form?.message}
 		<p class="mt-6 text-brown-light">{form.message}</p>
 	{/if}
+
+	{#if form?.choices && form.choices.length > 0}
+		<div class="mt-8 space-y-4 text-left">
+			<div class="text-center">
+				<h2 class="font-serif text-2xl text-brown">{i18n.t.rsvp.chooserTitle}</h2>
+				<p class="mt-2 text-sm leading-relaxed text-brown-light">
+					{i18n.t.rsvp.chooserSubtitle}
+				</p>
+			</div>
+
+			<div class="space-y-3">
+				{#each form.choices as choice}
+					<a
+						href={`/rsvp/${choice.householdCode}`}
+						class="block rounded-[1.5rem] border border-burgundy-light bg-white p-4 text-brown shadow-sm transition-colors hover:border-burgundy hover:bg-ivory/40 focus:ring-2 focus:ring-burgundy focus:ring-offset-2 focus:outline-none"
+					>
+						<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+							<div class="min-w-0">
+								<p class="font-serif text-xl text-brown">{choice.householdName}</p>
+								<p class="mt-2 text-xs font-semibold tracking-[0.18em] text-brown-light uppercase">
+									{i18n.t.rsvp.chooserGuestsLabel}
+								</p>
+								<ul class="mt-1 space-y-1 text-sm leading-relaxed text-brown-light">
+									{#each choice.guests as guest}
+										<li>{guest.first_name} {guest.last_name}</li>
+									{/each}
+								</ul>
+							</div>
+							<span
+								class="inline-flex shrink-0 items-center justify-center rounded-full border border-burgundy bg-burgundy/10 px-4 py-2 text-center text-xs font-semibold tracking-[0.18em] text-burgundy uppercase"
+							>
+								{i18n.t.rsvp.chooserButton}
+							</span>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</div>
+	{/if}
 </section>

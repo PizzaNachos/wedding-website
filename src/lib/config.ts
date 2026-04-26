@@ -13,6 +13,8 @@ export const CRATE_AND_BARREL_URL =
 export const WILD_BASIN_LODGING_URL =
 	'https://wildbasinlodge.my.canva.site/allenspark-lodging-recommendations/5-miles';
 
+export const SONG_REQUEST_URL = 'https://djmaestro.com/guest-requests/';
+
 export const STORY_IMAGES = [
 	{ image: '/images/our-story/tutor.png', imageAlt: 'Michael and Nayeli when they first met' },
 	{ image: '/images/our-story/met.jpg', imageAlt: 'Michael and Nayeli on their first date' },

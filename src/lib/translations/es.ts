@@ -8,6 +8,8 @@ export const es: Translation = {
 		lodging: 'Alojamiento',
 		faqs: 'Preguntas',
 		photos: 'Fotos',
+		sharePhotos: 'Compartir Fotos',
+		music: 'Música',
 		registry: 'Regalos',
 		rsvp: 'RSVP',
 		languageSwitcher: 'Selector de idioma',
@@ -188,10 +190,21 @@ export const es: Translation = {
 			guest: 'Fotos de Invitados'
 		}
 	},
+	music: {
+		title: 'Solicitudes de Canciones',
+		subtitle: 'Ayúdanos a crear la banda sonora de nuestra recepción.',
+		instructions:
+			'Hemos creado un formulario de solicitudes de canciones para que compartas las que te encantaría escuchar. Haz clic en el enlace abajo y luego llena el formulario en el sitio web de DjMaestro para enviar canciones (Busca nuestra boda en la lista, la contraseña es 090426).',
+		cta: 'Sugerir Canciones'
+	},
 	rsvp: {
 		title: 'RSVP',
 		instructions: 'Ingresa tu nombre para encontrar tu invitación.',
 		placeholder: 'Nombre',
+		chooserTitle: '¿Cuál es tu grupo?',
+		chooserSubtitle: 'Elige la invitación que coincide con tu hogar.',
+		chooserGuestsLabel: 'Invitados',
+		chooserButton: 'Esta es mi invitación',
 		button: 'Encontrar Mi Invitación'
 	},
 	rsvpCode: {

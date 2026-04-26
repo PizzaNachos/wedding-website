@@ -6,6 +6,8 @@ export const en = {
 		lodging: 'Lodging',
 		faqs: 'FAQs',
 		photos: 'Photos',
+		sharePhotos: 'Share Photos',
+		music: 'Music',
 		registry: 'Registry',
 		rsvp: 'RSVP',
 		notYou: 'Not you?',
@@ -184,11 +186,22 @@ export const en = {
 			guest: 'Guest Photos'
 		}
 	},
+	music: {
+		title: 'Song Requests',
+		subtitle: 'Help us build the soundtrack for our reception.',
+		instructions:
+			"We've set up a song request form so you can share the tracks you'd love to hear. Click the link below, then fill out the form on DjMaestro's website to submit songs (Find out wedding in the list, the passphrase is 090426).",
+		cta: 'Suggest Songs',
+	},
 	rsvp: {
 		title: 'RSVP',
 		instructions: 'Enter your name to RSVP.',
 		placeholder: 'Name',
-		button: 'Find My Invitation'
+		button: 'Find My Invitation',
+		chooserTitle: 'Which party is yours?',
+		chooserSubtitle: 'Select the invitation that matches your household.',
+		chooserGuestsLabel: 'Guests',
+		chooserButton: 'This is my party'
 	},
 	rsvpCode: {
 		title: 'RSVP',

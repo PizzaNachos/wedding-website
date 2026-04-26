@@ -4,13 +4,25 @@
 	import { guestSession } from '$lib/guest-session.svelte';
 	import { i18n } from '$lib/i18n.svelte';
 
-	const linkKeys = ['home', 'ourStory', 'lodging', 'faqs', 'photos', 'registry', 'rsvp'] as const;
+	const linkKeys = [
+		'home',
+		'ourStory',
+		'lodging',
+		'faqs',
+		'photos',
+		'sharePhotos',
+		'music',
+		'registry',
+		'rsvp'
+	] as const;
 	const linkHrefs: Record<(typeof linkKeys)[number], string> = {
 		home: '/',
 		ourStory: '/our-story',
 		lodging: '/lodging',
 		faqs: '/faqs',
 		photos: '/photos',
+		sharePhotos: '/photos?upload=1',
+		music: '/music',
 		registry: '/registry',
 		rsvp: '/rsvp'
 	};
@@ -19,7 +31,19 @@
 
 	function isActive(href: string): boolean {
 		if (href === '/') return page.url.pathname === '/';
-		return page.url.pathname.startsWith(href);
+		const [hrefPath, hrefQuery] = href.split('?');
+		if (hrefQuery) {
+			return page.url.pathname === hrefPath && page.url.search === `?${hrefQuery}`;
+		}
+		if (!page.url.pathname.startsWith(hrefPath)) return false;
+		// Defer to a more-specific sibling link if one matches the current URL exactly.
+		const matchedBySibling = Object.values(linkHrefs).some((other) => {
+			if (other === href) return false;
+			const [otherPath, otherQuery] = other.split('?');
+			if (!otherQuery) return false;
+			return otherPath === page.url.pathname && page.url.search === `?${otherQuery}`;
+		});
+		return !matchedBySibling;
 	}
 </script>
 
