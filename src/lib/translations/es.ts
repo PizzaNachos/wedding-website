@@ -190,8 +190,8 @@ export const es: Translation = {
 	},
 	rsvp: {
 		title: 'RSVP',
-		instructions: 'Ingresa tu nombre completo para encontrar tu invitación.',
-		placeholder: 'Nombre y Apellido',
+		instructions: 'Ingresa tu nombre para encontrar tu invitación.',
+		placeholder: 'Nombre',
 		button: 'Encontrar Mi Invitación'
 	},
 	rsvpCode: {

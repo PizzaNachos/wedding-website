@@ -186,8 +186,8 @@ export const en = {
 	},
 	rsvp: {
 		title: 'RSVP',
-		instructions: 'Enter your first and last name to find your invitation.',
-		placeholder: 'First and Last Name',
+		instructions: 'Enter your name to RSVP.',
+		placeholder: 'Name',
 		button: 'Find My Invitation'
 	},
 	rsvpCode: {
