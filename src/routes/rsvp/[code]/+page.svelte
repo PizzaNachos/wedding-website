@@ -101,7 +101,7 @@
 		<h1 class="page-title font-script text-brown">{i18n.t.rsvpCode.title}</h1>
 		<div class="section-rule"></div>
 		<p class="mt-4 font-serif text-lg leading-snug text-brown-light sm:text-xl">
-			The {data.household.name}
+			{data.household.name}
 		</p>
 	</div>
 
@@ -137,7 +137,10 @@
 											</p>
 										{/if}
 										<pre
-											class="mt-4 mr-4 font-serif text-xs leading-relaxed whitespace-pre-wrap text-brown-light">{(i18n.locale === 'es' && event.description_es) ? event.description_es : event.description}</pre>
+											class="mt-4 mr-4 font-serif text-xs leading-relaxed whitespace-pre-wrap text-brown-light">{i18n.locale ===
+												'es' && event.description_es
+												? event.description_es
+												: event.description}</pre>
 									</div>
 									{#if householdEventIds.has(event.id)}
 										<span
@@ -270,7 +273,7 @@
 						</div>
 					{/if}
 
-					<p class="text-sm text-gray-600 mb-4">
+					<p class="mb-4 text-sm text-gray-600">
 						{(totalReservedSeats === 1
 							? i18n.t.rsvpCode.receptionSeatsSingular
 							: i18n.t.rsvpCode.receptionSeatsPlural
