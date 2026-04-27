@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase';
 import { createServiceClient } from '$lib/supabase-server';
+import { recordRsvpAuditEvent } from '$lib/server/rsvp-audit';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -33,7 +34,7 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions: Actions = {
-	submitRsvp: async ({ request, params }) => {
+	submitRsvp: async ({ request, params, locals }) => {
 		const { code } = params;
 
 		const { data: household } = await supabase
@@ -95,6 +96,8 @@ export const actions: Actions = {
 		// 2. Parse per-guest, per-event data
 		const guestEventAttending = new Map<string, Map<string, boolean>>();
 		const guestDietary = new Map<string, { selections: string[]; other: string }>();
+		const affectedGuestIds = new Set<string>();
+		const affectedEventIds = new Set<string>();
 
 		for (const [key, value] of formData.entries()) {
 			// Per-event attendance: guests[{guestId}].events[{eventId}].attending
@@ -104,6 +107,8 @@ export const actions: Actions = {
 				if (validGuestIds.has(guestId) && validPairs.has(`${guestId}:${eventId}`)) {
 					if (!guestEventAttending.has(guestId)) guestEventAttending.set(guestId, new Map());
 					guestEventAttending.get(guestId)!.set(eventId, value === 'yes');
+					affectedGuestIds.add(guestId);
+					affectedEventIds.add(eventId);
 				}
 			}
 
@@ -183,6 +188,7 @@ export const actions: Actions = {
 		const hostsWithPlusOne = household.guests.filter(
 			(g: { id: string; allows_plus_one: boolean }) => g.allows_plus_one
 		);
+		const autoDeclinedPlusOneIds = new Set<string>();
 
 		for (const host of hostsWithPlusOne) {
 			const hostEvents = guestEventAttending.get(host.id);
@@ -200,6 +206,8 @@ export const actions: Actions = {
 			if (!plusOneGuests?.length) continue;
 
 			const plusOneId = plusOneGuests[0].id;
+			autoDeclinedPlusOneIds.add(plusOneId);
+			affectedGuestIds.add(plusOneId);
 
 			// Get plus-one's event assignments
 			const { data: plusOneEvents } = await supabase
@@ -219,8 +227,23 @@ export const actions: Actions = {
 					},
 					{ onConflict: 'guest_id,event_id' }
 				);
+				affectedEventIds.add(pe.event_id);
 			}
 		}
+
+		await recordRsvpAuditEvent(serviceClient, {
+			householdId: household.id,
+			source: 'public',
+			action: 'submit_rsvp',
+			visitorId: locals.visitorId,
+			metadata: {
+				household_code: code,
+				is_first_submission: isFirstSubmission,
+				affected_guest_ids: [...affectedGuestIds],
+				affected_event_ids: [...affectedEventIds],
+				auto_declined_plus_one_ids: [...autoDeclinedPlusOneIds]
+			}
+		});
 
 		return { success: true, message: 'Thank you! Your RSVP has been submitted.' };
 	},
@@ -245,7 +268,11 @@ export const actions: Actions = {
 		const lastName = String(formData.get('plus_one_last_name') ?? '').trim();
 
 		if (!firstName || !lastName) {
-			return { success: false, message: 'Please enter a first and last name for your guest.', action: 'addPlusOne' };
+			return {
+				success: false,
+				message: 'Please enter a first and last name for your guest.',
+				action: 'addPlusOne'
+			};
 		}
 
 		// Validate host belongs to household and allows plus one
@@ -261,7 +288,11 @@ export const actions: Actions = {
 			(g: { plus_one_of: string | null }) => g.plus_one_of === hostGuestId
 		);
 		if (existingPlusOne) {
-			return { success: false, message: 'A plus one has already been added.', action: 'addPlusOne' };
+			return {
+				success: false,
+				message: 'A plus one has already been added.',
+				action: 'addPlusOne'
+			};
 		}
 
 		// Insert plus-one guest
@@ -281,7 +312,11 @@ export const actions: Actions = {
 
 		if (insertError || !newGuest) {
 			console.error('Plus-one insert error:', insertError);
-			return { success: false, message: 'Something went wrong. Please try again.', action: 'addPlusOne' };
+			return {
+				success: false,
+				message: 'Something went wrong. Please try again.',
+				action: 'addPlusOne'
+			};
 		}
 
 		// Copy host's guest_events
@@ -335,14 +370,15 @@ export const actions: Actions = {
 			return { success: false, message: 'Invalid guest.', action: 'removePlusOne' };
 		}
 
-		const { error: deleteError } = await serviceClient
-			.from('guests')
-			.delete()
-			.eq('id', plusOneId);
+		const { error: deleteError } = await serviceClient.from('guests').delete().eq('id', plusOneId);
 
 		if (deleteError) {
 			console.error('Plus-one delete error:', deleteError);
-			return { success: false, message: 'Something went wrong. Please try again.', action: 'removePlusOne' };
+			return {
+				success: false,
+				message: 'Something went wrong. Please try again.',
+				action: 'removePlusOne'
+			};
 		}
 
 		return { success: true, action: 'removePlusOne' };
@@ -368,7 +404,11 @@ export const actions: Actions = {
 		const lastName = String(formData.get('plus_one_last_name') ?? '').trim();
 
 		if (!firstName || !lastName) {
-			return { success: false, message: 'Please enter a first and last name.', action: 'updatePlusOneName' };
+			return {
+				success: false,
+				message: 'Please enter a first and last name.',
+				action: 'updatePlusOneName'
+			};
 		}
 
 		const plusOne = household.guests.find(
@@ -385,7 +425,11 @@ export const actions: Actions = {
 
 		if (updateError) {
 			console.error('Plus-one update error:', updateError);
-			return { success: false, message: 'Something went wrong. Please try again.', action: 'updatePlusOneName' };
+			return {
+				success: false,
+				message: 'Something went wrong. Please try again.',
+				action: 'updatePlusOneName'
+			};
 		}
 
 		return { success: true, action: 'updatePlusOneName' };

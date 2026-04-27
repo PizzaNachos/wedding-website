@@ -10,6 +10,9 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	const hasAdults = $derived(data.household.guests.some((g: { is_child: boolean }) => !g.is_child));
+	const hasChildren = $derived(
+		data.household.guests.some((g: { is_child: boolean }) => g.is_child)
+	);
 	const hasExistingRsvp = $derived(data.existingRsvps.length > 0);
 
 	// Plus-one derived state
@@ -174,6 +177,17 @@
 						{i18n.t.rsvpCode.manageSubtitle}
 					</p>
 				</div>
+
+				{#if hasChildren}
+					<div class="mb-5 rounded-[1.5rem] border border-burgundy-light/80 bg-ivory/50 p-4">
+						<p class="mb-1 text-sm font-semibold tracking-wide text-brown-light uppercase">
+							{i18n.t.rsvpCode.adultNightTitle}
+						</p>
+						<p class="text-sm leading-relaxed text-brown-light">
+							{i18n.t.rsvpCode.adultNightMessage}
+						</p>
+					</div>
+				{/if}
 
 				{#if form?.success === false}
 					<div

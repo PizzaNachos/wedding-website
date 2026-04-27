@@ -98,7 +98,7 @@ export const en = {
 			{
 				question: 'What is the dress code?',
 				answer:
-					'We kindly request formal attire. For the ceremony in the church we request a more modest look, feel free to change after for the reception.'
+					'We kindly request formal attire. For the ceremony in the church we request a more modest look, feel free to change after for the reception. No jeans nor t-shirts are allowed '
 			},
 			{
 				question: 'Can I bring a plus one?',
@@ -190,7 +190,7 @@ export const en = {
 		title: 'Song Requests',
 		subtitle: 'Help us build the soundtrack for our reception.',
 		instructions:
-			"We've set up a song request form so you can share the tracks you'd love to hear. Click the link below, then fill out the form on DjMaestro's website to submit songs (Find out wedding in the list, the passphrase is 090426).",
+			"We've set up a song request form so you can share the tracks you'd love to hear. Click the link below, then fill out the form on DjMaestro's website to submit songs (Find our wedding in the list, the passphrase is 090426).",
 		cta: 'Suggest Songs',
 	},
 	rsvp: {
@@ -216,7 +216,10 @@ export const en = {
 		eventsNote: 'Your events are shown here for reference. Your selections stay in the RSVP form.',
 		eventsImageAlt: 'A romantic RSVP illustration for Michael and Nayeli',
 		receptionSeatsSingular: 'Your party has {n} seat at the reception.',
-		receptionSeatsPlural: 'Your party has {n} seats at the reception.'
+		receptionSeatsPlural: 'Your party has {n} seats at the reception.',
+		adultNightTitle: 'A Note for Parents',
+		adultNightMessage:
+			'We absolutely love your little ones, and they are warmly welcome at our celebration. That said, we know how rare a night out together can be — so consider this our invitation for the two of you to enjoy an evening to yourselves and celebrate love alongside us.'
 	},
 	rsvpForm: {
 		child: '(Child)',

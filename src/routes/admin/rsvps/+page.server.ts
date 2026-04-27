@@ -1,4 +1,5 @@
 import { createServiceClient } from '$lib/supabase-server';
+import { recordRsvpAuditEvent } from '$lib/server/rsvp-audit';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
@@ -15,7 +16,7 @@ export const load: PageServerLoad = async ({ url }) => {
 			supabase
 				.from('guests')
 				.select(
-					'id, first_name, last_name, is_child, is_plus_one, household_id, households(name), rsvps(id, event_id, attending, dietary_restrictions, submitted_at, updated_at)'
+					'id, first_name, last_name, is_child, is_plus_one, household_id, households(id, name), rsvps(id, event_id, attending, dietary_restrictions, submitted_at, updated_at)'
 				)
 				.order('last_name', { ascending: true }),
 			supabase.from('events').select('id, name').order('sort_order', { ascending: true }),
@@ -24,9 +25,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		]);
 
 	const eventList = events ?? [];
-	const guestEventSet = new Set(
-		(guestEvents ?? []).map((ge) => `${ge.guest_id}:${ge.event_id}`)
-	);
+	const guestEventSet = new Set((guestEvents ?? []).map((ge) => `${ge.guest_id}:${ge.event_id}`));
 
 	const contactByHouseholdId = new Map(
 		(contactInfo ?? []).map((c: { household_id: string }) => [c.household_id, c])
@@ -36,6 +35,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	type RsvpRow = {
 		guestId: string;
 		guestName: string;
+		householdId: string;
 		householdName: string;
 		isPlusOne: boolean;
 		eventAttendance: Record<string, boolean | null>; // keyed by event_id
@@ -50,16 +50,18 @@ export const load: PageServerLoad = async ({ url }) => {
 	let rows: RsvpRow[] = [];
 
 	for (const guest of guests ?? []) {
-		const household = guest.households as unknown as { name: string } | null;
-		const contact = contactByHouseholdId.get(guest.household_id) as {
-			email?: string;
-			phone?: string;
-			address_street?: string;
-			address_city?: string;
-			address_state?: string;
-			address_country?: string;
-			address_postal_code?: string;
-		} | undefined;
+		const household = guest.households as unknown as { id: string; name: string } | null;
+		const contact = contactByHouseholdId.get(guest.household_id) as
+			| {
+					email?: string;
+					phone?: string;
+					address_street?: string;
+					address_city?: string;
+					address_state?: string;
+					address_country?: string;
+					address_postal_code?: string;
+			  }
+			| undefined;
 
 		const addressParts = [
 			contact?.address_street,
@@ -76,9 +78,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 		for (const event of eventList) {
 			eventInvited[event.id] = guestEventSet.has(`${guest.id}:${event.id}`);
-			const rsvp = guest.rsvps?.find(
-				(r: { event_id: string }) => r.event_id === event.id
-			);
+			const rsvp = guest.rsvps?.find((r: { event_id: string }) => r.event_id === event.id);
 			eventAttendance[event.id] = rsvp?.attending ?? null;
 
 			// Get dietary from reception RSVP (or any rsvp that has it)
@@ -93,6 +93,7 @@ export const load: PageServerLoad = async ({ url }) => {
 		rows.push({
 			guestId: guest.id,
 			guestName: `${guest.first_name} ${guest.last_name}`,
+			householdId: household?.id ?? guest.household_id,
 			householdName: household?.name ?? '',
 			isPlusOne: guest.is_plus_one ?? false,
 			eventAttendance,
@@ -125,7 +126,7 @@ export const load: PageServerLoad = async ({ url }) => {
 };
 
 export const actions: Actions = {
-	update: async ({ request }) => {
+	update: async ({ request, locals }) => {
 		const supabase = createServiceClient();
 		const formData = await request.formData();
 
@@ -134,10 +135,21 @@ export const actions: Actions = {
 			return fail(400, { error: 'Guest is required.' });
 		}
 
+		const { data: guest } = await supabase
+			.from('guests')
+			.select('household_id')
+			.eq('id', guest_id)
+			.single();
+
+		if (!guest) {
+			return fail(400, { error: 'Guest not found.' });
+		}
+
 		// Parse dietary
 		const dietarySelections = formData.getAll('dietary_selections') as string[];
 		const dietaryOther = (formData.get('dietary_other') as string) ?? '';
 		const dietary = { selections: dietarySelections, other: dietaryOther };
+		const affectedEventIds = new Set<string>();
 
 		// Parse per-event attendance
 		for (const [key, value] of formData.entries()) {
@@ -168,8 +180,22 @@ export const actions: Actions = {
 				if (error) {
 					return fail(500, { error: 'Failed to update RSVP.' });
 				}
+
+				affectedEventIds.add(eventId);
 			}
 		}
+
+		await recordRsvpAuditEvent(supabase, {
+			householdId: guest.household_id,
+			guestId: guest_id,
+			source: 'admin',
+			action: 'admin_update',
+			adminUserId: locals.user?.id ?? null,
+			metadata: {
+				affected_guest_ids: [guest_id],
+				affected_event_ids: [...affectedEventIds]
+			}
+		});
 
 		return { success: true };
 	}
