@@ -131,11 +131,6 @@ export const en = {
 					'We recommend arriving 15-20 minutes before the ceremony start time. This allows time to find your seat and settle in.'
 			},
 			{
-				question: 'Will there be an open bar?',
-				answer:
-					'Unfortunately there will not be an open bar! We will serve wine with dinner but the bar will be a cash bar for the evening.'
-			},
-			{
 				question: 'Can I take photos during the ceremony?',
 				answer:
 					'We kindly ask for an unplugged ceremony — please turn off phones and cameras. Our professional photographers will capture every moment! You are welcome to take photos during the reception.'
@@ -169,7 +164,7 @@ export const en = {
 		registrySubtitle: 'Browse our Crate & Barrel registry for gift ideas we love.',
 		registryButton: 'View Registry',
 		cashTitle: 'Cash Registry',
-		cashSubtitle: 'Feel free to include a note with which "gift" inspired you!',
+		cashSubtitle: 'We apreciate cash for our house fund.',
 		cashButton: 'Open Venmo',
 		giftTitle: 'Gift Inspiration',
 		giftFooter: 'These are just ideas for inspiration — any amount is deeply appreciated!'

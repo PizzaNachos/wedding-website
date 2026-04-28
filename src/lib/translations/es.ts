@@ -134,11 +134,6 @@ export const es: Translation = {
 					'Recomendamos llegar 15-20 minutos antes de la hora de inicio de la ceremonia. Esto da tiempo para encontrar tu asiento y acomodarte.'
 			},
 			{
-				question: '¿Habrá barra libre?',
-				answer:
-					'¡Lamentablemente no habrá barra libre! Serviremos vino con la cena, pero el bar será de pago durante la noche.'
-			},
-			{
 				question: '¿Puedo tomar fotos durante la ceremonia?',
 				answer:
 					'Pedimos amablemente una ceremonia sin dispositivos — por favor apaga teléfonos y cámaras. ¡Nuestros fotógrafos profesionales capturarán cada momento! Eres bienvenido a tomar fotos durante la recepción.'
@@ -172,7 +167,7 @@ export const es: Translation = {
 		registrySubtitle: 'Explora nuestra lista de regalos en Crate & Barrel.',
 		registryButton: 'Ver Lista',
 		cashTitle: 'Registro en Efectivo',
-		cashSubtitle: '¡No olvides incluir una nota con qué "regalo" te inspiró!',
+		cashSubtitle: 'Apreciamos el efectivo para nuestro fondo para la casa.',
 		cashButton: 'Abrir Venmo',
 		giftTitle: 'Inspiración para Regalos',
 		giftFooter:
