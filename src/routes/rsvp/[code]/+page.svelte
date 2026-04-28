@@ -112,10 +112,10 @@
 		<aside class="space-y-5 lg:sticky lg:top-24 lg:self-start">
 			<div class="overflow-hidden rounded-[2rem] border border-burgundy-light bg-white shadow-sm">
 				<div class="rounded-[2rem] border border-burgundy-light bg-white p-5 shadow-sm sm:p-6">
-					<p class="text-[0.72rem] font-semibold tracking-[0.24em] text-burgundy-dark uppercase">
+					<p class="text-[0.8rem] font-semibold tracking-[0.24em] text-burgundy-dark uppercase">
 						{i18n.t.rsvpCode.eventsTitle}
 					</p>
-					<p class="mt-2 max-w-sm text-sm leading-relaxed text-brown-light">
+					<p class="text-md mt-2 max-w-sm leading-relaxed text-brown-light">
 						{i18n.t.rsvpCode.eventsNote}
 					</p>
 
@@ -132,15 +132,15 @@
 									<div>
 										<p class="font-serif text-xl text-brown">{event.name}</p>
 										{#if householdEventIds.has(event.id)}
-											<p class="mt-1 mr-4 text-sm leading-relaxed text-brown-light">
+											<p class="text-md mt-1 mr-4 leading-relaxed text-burgundy-dark">
 												{event.location}
 											</p>
-											<p class="mt-1 mr-4 text-sm leading-relaxed text-brown-light">
+											<p class="text-md mt-1 mr-4 leading-relaxed text-burgundy-dark">
 												{event.address}
 											</p>
 										{/if}
 										<pre
-											class="mt-4 mr-4 font-serif text-xs leading-relaxed whitespace-pre-wrap text-brown-light">{i18n.locale ===
+											class="mt-4 mr-4 font-serif text-sm leading-relaxed whitespace-pre-wrap text-burgundy-dark">{i18n.locale ===
 												'es' && event.description_es
 												? event.description_es
 												: event.description}</pre>
@@ -179,11 +179,11 @@
 				</div>
 
 				{#if hasChildren}
-					<div class="mb-5 rounded-[1.5rem] border border-burgundy-light/80 bg-ivory/50 p-4">
-						<p class="mb-1 text-sm font-semibold tracking-wide text-brown-light uppercase">
+					<div class="mb-5 rounded-[1.5rem] border border-burgundy-light/60 bg-ivory/50 p-4">
+						<p class="text-md mb-1 font-semibold tracking-wide text-black uppercase">
 							{i18n.t.rsvpCode.adultNightTitle}
 						</p>
-						<p class="text-sm leading-relaxed text-brown-light">
+						<p class="text-md leading-relaxed text-burgundy-dark">
 							{i18n.t.rsvpCode.adultNightMessage}
 						</p>
 					</div>
@@ -287,7 +287,7 @@
 						</div>
 					{/if}
 
-					<p class="mb-4 text-sm text-gray-600">
+					<p class="mb-4 pt-10 text-center text-lg text-gray-800">
 						{(totalReservedSeats === 1
 							? i18n.t.rsvpCode.receptionSeatsSingular
 							: i18n.t.rsvpCode.receptionSeatsPlural
