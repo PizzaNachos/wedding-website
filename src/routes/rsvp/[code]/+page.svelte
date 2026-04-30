@@ -62,6 +62,10 @@
 		return [...eventMap.values()].some((v) => v === true);
 	}
 
+	const householdAttendingAnyEvent = $derived(
+		allGuests.some((g) => hostAcceptsAnyEvent(g.id))
+	);
+
 	// Events visible to this household (any guest in household is invited)
 	function formatTime(time: string): string {
 		const [hourStr, minStr] = time.split(':');
@@ -167,6 +171,92 @@
 					<p class="mt-3 text-brown-light">
 						{i18n.t.rsvpCode.submitted}
 					</p>
+				</div>
+
+				<div class="mt-6 space-y-4">
+					{#if householdAttendingAnyEvent}
+						<div class="text-center sm:text-left">
+							<h3 class="font-serif text-2xl text-brown">{i18n.t.rsvpCode.whatsNextTitle}</h3>
+							<p class="mt-1 text-sm text-brown-light">{i18n.t.rsvpCode.whatsNextSubtitle}</p>
+						</div>
+
+						<a
+							href="/registry"
+							class="flex flex-col gap-3 rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 transition-colors hover:bg-burgundy-light/50 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+						>
+							<div>
+								<p class="font-serif text-xl text-brown">{i18n.t.rsvpCode.registryLinkTitle}</p>
+								<p class="mt-1 text-sm text-brown-light">
+									{i18n.t.rsvpCode.registryLinkDescription}
+								</p>
+							</div>
+							<span
+								class="inline-flex shrink-0 items-center justify-center rounded-full border-2 border-burgundy bg-burgundy px-6 py-2 text-xs font-semibold tracking-[0.22em] text-white uppercase"
+							>
+								{i18n.t.rsvpCode.registryLinkCta}
+							</span>
+						</a>
+
+						<a
+							href="/photos?upload=1"
+							class="flex flex-col gap-3 rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 transition-colors hover:bg-burgundy-light/50 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+						>
+							<div>
+								<p class="font-serif text-xl text-brown">
+									{i18n.t.rsvpCode.sharePhotosLinkTitle}
+								</p>
+								<p class="mt-1 text-sm text-brown-light">
+									{i18n.t.rsvpCode.sharePhotosLinkDescription}
+								</p>
+							</div>
+							<span
+								class="inline-flex shrink-0 items-center justify-center rounded-full border-2 border-burgundy bg-burgundy px-6 py-2 text-xs font-semibold tracking-[0.22em] text-white uppercase"
+							>
+								{i18n.t.rsvpCode.sharePhotosLinkCta}
+							</span>
+						</a>
+
+						<a
+							href="/music"
+							class="flex flex-col gap-3 rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 transition-colors hover:bg-burgundy-light/50 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+						>
+							<div>
+								<p class="font-serif text-xl text-brown">
+									{i18n.t.rsvpCode.suggestSongsLinkTitle}
+								</p>
+								<p class="mt-1 text-sm text-brown-light">
+									{i18n.t.rsvpCode.suggestSongsLinkDescription}
+								</p>
+							</div>
+							<span
+								class="inline-flex shrink-0 items-center justify-center rounded-full border-2 border-burgundy bg-burgundy px-6 py-2 text-xs font-semibold tracking-[0.22em] text-white uppercase"
+							>
+								{i18n.t.rsvpCode.suggestSongsLinkCta}
+							</span>
+						</a>
+					{:else}
+						<div class="text-center sm:text-left">
+							<h3 class="font-serif text-2xl text-brown">{i18n.t.rsvpCode.declinedTitle}</h3>
+							<p class="mt-1 text-sm text-brown-light">{i18n.t.rsvpCode.declinedMessage}</p>
+						</div>
+
+						<a
+							href="/registry"
+							class="flex flex-col gap-3 rounded-2xl border border-burgundy-light bg-burgundy-light/30 p-5 transition-colors hover:bg-burgundy-light/50 sm:flex-row sm:items-center sm:justify-between sm:p-6"
+						>
+							<div>
+								<p class="font-serif text-xl text-brown">{i18n.t.rsvpCode.registryLinkTitle}</p>
+								<p class="mt-1 text-sm text-brown-light">
+									{i18n.t.rsvpCode.registryLinkDescription}
+								</p>
+							</div>
+							<span
+								class="inline-flex shrink-0 items-center justify-center rounded-full border-2 border-burgundy bg-burgundy px-6 py-2 text-xs font-semibold tracking-[0.22em] text-white uppercase"
+							>
+								{i18n.t.rsvpCode.registryLinkCta}
+							</span>
+						</a>
+					{/if}
 				</div>
 			{:else}
 				<div class="mb-5">

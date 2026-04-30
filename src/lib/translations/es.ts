@@ -219,7 +219,22 @@ export const es: Translation = {
 		receptionSeatsPlural: 'Tu grupo tiene {n} asientos en la recepción.',
 		adultNightTitle: 'Una Nota para los Padres',
 		adultNightMessage:
-			'Adoramos a sus pequeños y son siempre bienvenidos en nuestra celebración. Sabemos lo especial que puede ser una noche libre — así que considérenlo nuestra invitación para que ustedes dos disfruten de una velada a solas y celebren el amor junto a nosotros.'
+			'Adoramos a sus pequeños y son siempre bienvenidos en nuestra celebración. Sabemos lo especial que puede ser una noche libre — así que considérenlo nuestra invitación para que ustedes dos disfruten de una velada a solas y celebren el amor junto a nosotros.',
+		whatsNextTitle: '¿Qué Sigue?',
+		whatsNextSubtitle: 'Algunas formas de seguir celebrando con nosotros.',
+		declinedTitle: 'Te vamos a extrañar',
+		declinedMessage:
+			'Lamentamos que no puedas acompañarnos. Si lo deseas, no dudes en explorar nuestra lista de regalos para compartir la celebración desde lejos.',
+		registryLinkTitle: 'Visita la Lista de Regalos',
+		registryLinkDescription:
+			'Explora nuestras selecciones de Crate & Barrel o contribuye al fondo para nuestra casa.',
+		registryLinkCta: 'Ver Lista',
+		sharePhotosLinkTitle: 'Comparte Tus Fotos',
+		sharePhotosLinkDescription: 'Sube fotos del día para que podamos revivir cada momento juntos.',
+		sharePhotosLinkCta: 'Subir Fotos',
+		suggestSongsLinkTitle: 'Sugiere Canciones',
+		suggestSongsLinkDescription: 'Ayúdanos a crear la banda sonora de la recepción.',
+		suggestSongsLinkCta: 'Enviar Canciones'
 	},
 	rsvpForm: {
 		child: '(Niño/a)',

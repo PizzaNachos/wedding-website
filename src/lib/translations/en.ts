@@ -214,7 +214,22 @@ export const en = {
 		receptionSeatsPlural: 'Your party has {n} seats at the reception.',
 		adultNightTitle: 'A Note for Parents',
 		adultNightMessage:
-			'We absolutely love your little ones, and they are warmly welcome at our celebration. That said, we know how rare a night out together can be — so consider this our invitation for the two of you to enjoy an evening to yourselves and celebrate love alongside us.'
+			'We absolutely love your little ones, and they are warmly welcome at our celebration. That said, we know how rare a night out together can be — so consider this our invitation for the two of you to enjoy an evening to yourselves and celebrate love alongside us.',
+		whatsNextTitle: "What's Next",
+		whatsNextSubtitle: 'A few ways to keep the celebration going.',
+		declinedTitle: 'We will miss you',
+		declinedMessage:
+			"We're sorry to hear you won't be able to make it. Feel free to peruse our registry if you'd like to share in the celebration from afar.",
+		registryLinkTitle: 'Visit the Registry',
+		registryLinkDescription: 'Browse our Crate & Barrel picks or contribute to our house fund.',
+		registryLinkCta: 'View Registry',
+		sharePhotosLinkTitle: 'Share Your Photos',
+		sharePhotosLinkDescription:
+			'Upload pictures from the day so we can relive every moment together.',
+		sharePhotosLinkCta: 'Upload Photos',
+		suggestSongsLinkTitle: 'Suggest Songs',
+		suggestSongsLinkDescription: 'Help us build the soundtrack for the reception.',
+		suggestSongsLinkCta: 'Submit Songs'
 	},
 	rsvpForm: {
 		child: '(Child)',
