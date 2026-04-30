@@ -98,7 +98,7 @@ export const en = {
 			{
 				question: 'What is the dress code?',
 				answer:
-					'We kindly request formal attire. For the ceremony in the church we request a more modest look, feel free to change after for the reception. No jeans nor t-shirts are allowed '
+					'We kindly request formal attire. For the ceremony in the church we request a more modest look, feel free to change after for the reception. No jeans nor t-shirts are allowed.'
 			},
 			{
 				question: 'Can I bring a plus one?',
@@ -164,7 +164,7 @@ export const en = {
 		registrySubtitle: 'Browse our Crate & Barrel registry for gift ideas we love.',
 		registryButton: 'View Registry',
 		cashTitle: 'Cash Registry',
-		cashSubtitle: 'We apreciate cash for our house fund.',
+		cashSubtitle: 'We appreciate cash for our house fund.',
 		cashButton: 'Open Venmo',
 		giftTitle: 'Gift Inspiration',
 		giftFooter: 'These are just ideas for inspiration — any amount is deeply appreciated!'
