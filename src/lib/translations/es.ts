@@ -114,9 +114,19 @@ export const es: Translation = {
 					'¡Amamos a los pequeños de nuestras vidas! Los niños son bienvenidos si están listados en su invitación — por favor asegúrate de confirmar la asistencia de cada miembro de la familia individualmente. Para quienes no tienen niños en su invitación, ¡esperamos que disfruten una divertida noche y una celebración bien merecida!'
 			},
 			{
+				question: '¿Habrá servicio de celular o Wi-Fi?',
+				answer:
+					'No hay servicio de celular en el lugar, así que por favor planeen con anticipación. Wild Basin Lodge, el lugar de la recepción, tendrá Wi-Fi disponible.'
+			},
+			{
 				question: '¿Habrá estacionamiento en el lugar?',
 				answer:
-					'¡Sí! Hay estacionamiento gratuito y amplio disponible en el lugar de la recepción. El lugar de la recepción también permite estacionamiento durante la noche. Recomendamos ir en carro compartido al lugar de la ceremonia, ya que prácticamente no hay estacionamiento allí.'
+					"Hay estacionamiento gratuito y amplio disponible en Wild Basin Lodge, el lugar de la recepción, y también se permite estacionamiento durante la noche. El estacionamiento en St. Catherine's Chapel on the Rock para la ceremonia es extremadamente limitado, así que por favor estaciónense en Wild Basin Lodge y compartan carro o pidan que los dejen en la ceremonia."
+			},
+			{
+				question: '¿Qué podemos hacer entre la ceremonia y la recepción?',
+				answer:
+					"Entre la ceremonia y la recepción, pueden visitar las Estaciones de la Cruz, pasar por la cafetería y tienda de regalos cercana, o caminar a Maryann's Pond."
 			},
 			{
 				question: '¿Habrá comida en la recepción?',

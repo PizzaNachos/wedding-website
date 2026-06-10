@@ -111,9 +111,19 @@ export const en = {
 					"We love the little ones in our lives! Children are welcome if they are listed on your invitation — please be sure to RSVP for each family member individually. For those without little ones on their invite, we hope you'll enjoy a fun night out and a well-deserved celebration!"
 			},
 			{
+				question: 'Will there be cell service or Wi-Fi?',
+				answer:
+					'There is no cell service up at the venue, so please plan ahead. Wild Basin Lodge, our reception venue, will have Wi-Fi available.'
+			},
+			{
 				question: 'Will there be parking at the venue?',
 				answer:
-					'Yes! There is free and ample parking available at the reception venue. The reception venue also allows overnight parking. We recommend carpooling to the ceremony venue as there is virtually no parking there.'
+					"There is free and ample parking available at Wild Basin Lodge, our reception venue, and overnight parking is allowed. Parking at St. Catherine's Chapel on the Rock for the ceremony is extremely limited, so please park at Wild Basin Lodge and carpool or get dropped off at the ceremony."
+			},
+			{
+				question: 'What should we do between the ceremony and reception?',
+				answer:
+					"Between the ceremony and reception, you can visit the Stations of the Cross, stop by the nearby coffee and gift shop, or take a walk to Maryann's Pond."
 			},
 			{
 				question: 'Will there be food at the reception?',
