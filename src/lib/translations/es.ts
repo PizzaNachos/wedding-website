@@ -101,7 +101,7 @@ export const es: Translation = {
 			{
 				question: '¿Cuál es el código de vestimenta?',
 				answer:
-					'Solicitamos amablemente vestimenta formal. Para la ceremonia en la iglesia, pedimos un look más modesto. ¡Puedes cambiarte después para la recepción si lo deseas! No se permiten jeans ni camisetas.'
+					'Solicitamos amablemente vestimenta formal. Para la ceremonia en la iglesia, pedimos un estilo más modesto; si lo deseas, puedes cambiarte para la recepción. No se permiten jeans, camisetas, shorts ni camisas polo.'
 			},
 			{
 				question: '¿Puedo traer acompañante?',
@@ -141,7 +141,7 @@ export const es: Translation = {
 			{
 				question: '¿A qué hora debo llegar?',
 				answer:
-					'Recomendamos llegar 15-20 minutos antes de la hora de inicio de la ceremonia. Esto da tiempo para encontrar tu asiento y acomodarte.'
+					'Recomendamos llegar entre 15 y 20 minutos antes del inicio de la ceremonia. Si recibiste una invitación para la ceremonia, la iglesia abre a las 12:00 p. m. Los bancos al frente de la iglesia están reservados para los familiares que hayan sido notificados. Puedes sentarte en cualquier banco que no esté reservado o en el balcón. Cada banco tiene capacidad para seis invitados. Debido a que los asientos están limitados a 100 invitados, te pedimos que dejes los portabebés y los bolsos grandes en el auto. Si los bancos están llenos, puedes permanecer de pie en la parte trasera de la iglesia una vez que termine la procesión.'
 			},
 			{
 				question: '¿Puedo tomar fotos durante la ceremonia?',

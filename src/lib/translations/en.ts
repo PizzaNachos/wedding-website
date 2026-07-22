@@ -98,7 +98,7 @@ export const en = {
 			{
 				question: 'What is the dress code?',
 				answer:
-					'We kindly request formal attire. For the ceremony in the church we request a more modest look, feel free to change after for the reception. No jeans nor t-shirts are allowed.'
+					'We kindly request formal attire. For the ceremony in the church, we request a more modest look; feel free to change for the reception. Jeans, T-shirts, shorts, and polo shirts are not allowed.'
 			},
 			{
 				question: 'Can I bring a plus one?',
@@ -138,7 +138,7 @@ export const en = {
 			{
 				question: 'What time should I arrive?',
 				answer:
-					'We recommend arriving 15-20 minutes before the ceremony start time. This allows time to find your seat and settle in.'
+					'We recommend arriving 15-20 minutes before the ceremony start time. If you have been invited to the ceremony, the church opens at 12:00 p.m. The pews at the front of the church are reserved for family members who have been notified. You may sit in any pew that is not reserved or in the balcony. Each pew seats six guests. Because seating is limited to 100 guests, we ask that you leave baby carriers and large bags in your car. If the pews are full, you may stand at the back of the church after the processional has ended.'
 			},
 			{
 				question: 'Can I take photos during the ceremony?',
